@@ -435,4 +435,3 @@ cp docs/swagger.yaml api-spec.yaml
 ---
 
 **Anterior:** [RESTful API com Gin](05-restful-api-gin.md) | **Voltar ao início:** [README](README.md)
-

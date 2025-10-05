@@ -195,4 +195,3 @@ platform-restart: ## Reinicia toda a plataforma
 	@echo "${YELLOW}Reiniciando plataforma...${RESET}"
 	@docker-compose restart
 	@echo "${GREEN}✅ Plataforma reiniciada${RESET}"
-

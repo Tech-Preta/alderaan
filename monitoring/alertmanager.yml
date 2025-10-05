@@ -8,7 +8,7 @@ global:
   # smtp_from: 'alertmanager@alderaan.com'
   # smtp_auth_username: 'your-email@gmail.com'
   # smtp_auth_password: 'your-app-password'
-  
+
   # Slack configuration (descomente para enviar para Slack)
   # slack_api_url: 'https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK'
 
@@ -23,10 +23,10 @@ route:
   group_wait: 10s          # Espera 10s para agrupar alertas similares
   group_interval: 10s      # Intervalo entre notificações do mesmo grupo
   repeat_interval: 12h     # Não repetir notificação pelo menos por 12h
-  
+
   # Receptor padrão
   receiver: 'default'
-  
+
   # Rotas específicas por severidade
   routes:
     # Alertas críticos - notificação imediata
@@ -36,7 +36,7 @@ route:
       group_wait: 5s
       repeat_interval: 5m
       continue: true
-    
+
     # Alertas de warning - notificação agrupada
     - match:
         severity: warning
@@ -44,7 +44,7 @@ route:
       group_wait: 30s
       repeat_interval: 1h
       continue: true
-    
+
     # Alertas info - apenas log
     - match:
         severity: info
@@ -60,7 +60,7 @@ inhibit_rules:
     target_match:
       alertname: 'HighLatency'
     equal: ['service', 'instance']
-  
+
   # Se há erro crítico, não notificar sobre warnings
   - source_match:
       severity: 'critical'
@@ -75,7 +75,7 @@ receivers:
     webhook_configs:
       - url: 'http://localhost:9093/webhook'
         send_resolved: true
-  
+
   # Alertas críticos
   - name: 'critical-alerts'
     # Email (descomente e configure)
@@ -88,7 +88,7 @@ receivers:
     #       <p><strong>Severidade:</strong> {{ .CommonLabels.severity }}</p>
     #       <p><strong>Descrição:</strong> {{ .CommonAnnotations.description }}</p>
     #       <p><strong>Runbook:</strong> <a href="{{ .CommonAnnotations.runbook_url }}">{{ .CommonAnnotations.runbook_url }}</a></p>
-    
+
     # Slack (descomente e configure)
     # slack_configs:
     #   - channel: '#alerts-critical'
@@ -99,12 +99,12 @@ receivers:
     #       *Descrição:* {{ .CommonAnnotations.description }}
     #       *Runbook:* {{ .CommonAnnotations.runbook_url }}
     #     send_resolved: true
-    
+
     # Webhook customizado (pode integrar com PagerDuty, Opsgenie, etc)
     webhook_configs:
       - url: 'http://localhost:9093/webhook/critical'
         send_resolved: true
-  
+
   # Alertas de warning
   - name: 'warning-alerts'
     # Slack (descomente e configure)
@@ -115,11 +115,11 @@ receivers:
     #       *Alerta:* {{ .GroupLabels.alertname }}
     #       *Descrição:* {{ .CommonAnnotations.description }}
     #     send_resolved: true
-    
+
     webhook_configs:
       - url: 'http://localhost:9093/webhook/warning'
         send_resolved: true
-  
+
   # Alertas informativos
   - name: 'info-alerts'
     webhook_configs:
@@ -128,4 +128,3 @@ receivers:
 
 # Timeouts
 time_intervals: []
-

@@ -13,19 +13,19 @@ Resumo da configuração da stack completa de observabilidade para o projeto Ald
 #### **Golden Signals**
 1. **Requests/sec (Traffic)** - Stat panel
    - Taxa de requisições por segundo
-   
+
 2. **P95 Latency** - Stat panel
    - Latência P95 com thresholds (amarelo > 0.5s, vermelho > 1s)
-   
+
 3. **Error Rate** - Stat panel
    - Taxa de erro percentual
-   
+
 4. **In-Flight Requests (Saturation)** - Stat panel
    - Requisições concorrentes
 
 5. **Request Rate by Endpoint** - Time series
    - Gráfico de requisições por endpoint (GET/POST)
-   
+
 6. **Latency Percentiles by Endpoint** - Time series
    - P50, P95, P99 por endpoint
 
@@ -35,19 +35,19 @@ Resumo da configuração da stack completa de observabilidade para o projeto Ald
 #### **Métricas de Negócio**
 8. **Total Products** - Stat panel
    - Total de produtos cadastrados
-   
+
 9. **Total Inventory Value** - Stat panel
    - Valor total em USD
-   
+
 10. **Average Product Price** - Stat panel
     - Preço médio em USD
-    
+
 11. **Products Created (Total)** - Stat panel
     - Total de produtos criados
-    
+
 12. **Products by Category** - Pie chart
     - Distribuição visual por categoria
-    
+
 13. **Product Creation Rate** - Time series
     - Taxa de criação de produtos/segundo
 
@@ -334,7 +334,6 @@ monitoring/
 
 ---
 
-**Criado em**: 2025-10-04  
-**Stack**: Prometheus 2.x + Alertmanager 0.27+ + Grafana 11.x  
+**Criado em**: 2025-10-04
+**Stack**: Prometheus 2.x + Alertmanager 0.27+ + Grafana 11.x
 **Status**: ✅ Produção-ready
-

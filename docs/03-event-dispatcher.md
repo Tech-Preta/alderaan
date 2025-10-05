@@ -11,14 +11,14 @@
 ```go
 func CreateProduct(name string, sku int, price int) error {
     product := NewProduct(name, sku, price)
-    
+
     // Múltiplas responsabilidades no mesmo lugar
     SaveToDatabase(product)
     SendEmailNotification(product)      // ❌ Acoplado
     UpdateSearchIndex(product)          // ❌ Acoplado
     LogAnalytics(product)               // ❌ Acoplado
     NotifyInventorySystem(product)      // ❌ Acoplado
-    
+
     return nil
 }
 ```
@@ -34,11 +34,11 @@ func CreateProduct(name string, sku int, price int) error {
 ```go
 func CreateProduct(name string, sku int, price int) error {
     product := NewProduct(name, sku, price)
-    
+
     // Apenas dispara o evento
     event := NewProductCreatedEvent(product)
     dispatcher.Dispatch("product.created", event)  // ✅
-    
+
     return nil
 }
 
@@ -178,20 +178,20 @@ func (e *ProductCreatedEvent) EventName() string {
 ```go
 func main() {
     dispatcher := NewEventDispatcher()
-    
+
     // Registrar handlers
     dispatcher.Register("product.created", func(event Event) {
         fmt.Println("Handler 1: Product created!")
     })
-    
+
     dispatcher.Register("product.created", func(event Event) {
         fmt.Println("Handler 2: Sending email...")
     })
-    
+
     dispatcher.Register("product.created", func(event Event) {
         fmt.Println("Handler 3: Updating search index...")
     })
-    
+
     // ... resto do código
 }
 ```
@@ -199,9 +199,9 @@ func main() {
 ### **4. Disparar Evento**
 
 ```go
-func NewProduct(name string, sku int, categories []string, price int, 
+func NewProduct(name string, sku int, categories []string, price int,
     dispatcher *EventDispatcher) (*Product, *ProductCreatedEvent, error) {
-    
+
     // Validações
     ok, err := Validate(name, sku, categories, price)
     if !ok {
@@ -211,9 +211,9 @@ func NewProduct(name string, sku int, categories []string, price int,
     p := &Product{Name: name, Sku: sku, Categories: categories, Price: price}
 
     // Criar e despachar evento
-    event := NewProductCreatedEvent(p.GetName(), p.GetSku(), 
+    event := NewProductCreatedEvent(p.GetName(), p.GetSku(),
         p.GetCategories(), p.GetPrice())
-    
+
     if dispatcher != nil {
         dispatcher.Dispatch(event.EventName(), event)  // 🚀
     }
@@ -380,7 +380,7 @@ dispatcher.Register("product.created", func(event Event) {
             log.Printf("Handler panic: %v", r)
         }
     }()
-    
+
     // Lógica do handler
 })
 ```
@@ -397,4 +397,3 @@ Para sistemas mais complexos, considere:
 ---
 
 **Anterior:** [Arquitetura Limpa](02-clean-architecture.md) | **Próximo:** [Graceful Shutdown](04-graceful-shutdown.md)
-

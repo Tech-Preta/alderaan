@@ -4,10 +4,17 @@ Este diretório contém os Helm charts para deploy da aplicação Alderaan no Ku
 
 ## 📦 Charts Disponíveis
 
-### Alderaan
-Chart principal que inclui:
-- API Go com DDD e Clean Architecture
-- PostgreSQL (via subchart Bitnami)
+### Alderaan API
+Chart principal que implanta a aplicação Alderaan com:
+- ✅ API Go com DDD e Clean Architecture
+- ✅ PostgreSQL (via subchart Bitnami)
+- ✅ Horizontal Pod Autoscaler (HPA)
+- ✅ Ingress com suporte a TLS
+- ✅ Service Account e configurações de segurança
+- ✅ ConfigMaps e Secrets para configuração
+- ✅ Health checks e readiness probes
+- ✅ Métricas Prometheus integradas
+- ✅ Graceful shutdown
 - Prometheus (via subchart community)
 - Grafana (via subchart oficial)
 - Migrations (Flyway)
@@ -259,4 +266,3 @@ MIT License - veja o arquivo LICENSE para detalhes
 - **Issues**: https://github.com/williamkoller/golang-domain-driven-design/issues
 - **Discussions**: https://github.com/williamkoller/golang-domain-driven-design/discussions
 - **Documentação**: https://github.com/williamkoller/golang-domain-driven-design/tree/main/docs
-

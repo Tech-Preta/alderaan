@@ -120,7 +120,7 @@ monitoring/
 Nota: O docker-compose.yml está na raiz do projeto e inclui todos os serviços:
 - PostgreSQL
 - API
-- Prometheus  
+- Prometheus
 - Grafana
 ```
 
@@ -163,7 +163,7 @@ histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))
 histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m]))
 
 # Latência por endpoint
-histogram_quantile(0.95, 
+histogram_quantile(0.95,
   sum(rate(http_request_duration_seconds_bucket[5m])) by (endpoint, le)
 )
 ```
@@ -319,7 +319,7 @@ curl http://localhost:8080/metrics
 #### **Painel 1: Golden Signals**
 
 - **Latência P95**: Line graph
-- **RPS**: Line graph  
+- **RPS**: Line graph
 - **Taxa de Erro**: Line graph com threshold
 - **Requisições Simultâneas**: Gauge
 
@@ -351,7 +351,7 @@ curl http://localhost:8080/metrics
 
 4. Se estiver usando Docker no Mac/Windows:
    - Use `host.docker.internal:8080` no `prometheus.yml`
-   
+
 5. Se estiver usando Docker no Linux:
    - Use `172.17.0.1:8080` no `prometheus.yml`
 
@@ -387,4 +387,3 @@ Para mais detalhes sobre monitoramento, consulte:
 ---
 
 **🚀 Pronto! Agora você tem monitoramento completo com Golden Signals e métricas de negócio!**
-

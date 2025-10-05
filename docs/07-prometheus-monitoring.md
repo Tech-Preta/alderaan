@@ -369,7 +369,7 @@ O projeto inclui dashboards prontos em `monitoring/dashboards/`.
 
 ```promql
 # Latência (p95) por endpoint
-histogram_quantile(0.95, 
+histogram_quantile(0.95,
   sum(rate(http_request_duration_seconds_bucket[5m])) by (endpoint, le)
 )
 
@@ -378,8 +378,8 @@ sum(rate(http_requests_total[5m])) by (endpoint)
 
 # Taxa de erro (%)
 (
-  sum(rate(http_request_errors_total[5m])) 
-  / 
+  sum(rate(http_request_errors_total[5m]))
+  /
   sum(rate(http_requests_total[5m]))
 ) * 100
 
@@ -454,7 +454,7 @@ products_average_price
    ```go
    // ❌ Ruim: user_id tem milhões de valores
    http_requests{user_id="12345"}
-   
+
    // ✅ Bom: status tem poucos valores
    http_requests{status="200"}
    ```
@@ -489,7 +489,7 @@ products_average_price
    // ❌ Errado: usar Counter
    activeUsers.Inc()  // Quando usuário conecta
    activeUsers.Dec()  // ❌ Não existe Dec() em Counter!
-   
+
    // ✅ Correto: usar Gauge
    activeUsers.Set(count)
    ```
@@ -553,4 +553,3 @@ Para produção:
 ---
 
 **Anterior:** [Swagger Documentation](06-swagger-documentation.md) | **Voltar ao início:** [README](README.md)
-

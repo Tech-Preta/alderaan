@@ -86,7 +86,7 @@ func TestPostgresProductRepository_Add(t *testing.T) {
 			},
 			mockSetup: func(mock sqlmock.Sqlmock) {
 				mock.ExpectBegin()
-				
+
 				rows := sqlmock.NewRows([]string{"id"}).AddRow(2)
 				mock.ExpectQuery("INSERT INTO products").
 					WithArgs("Book", 999, 50).
@@ -96,7 +96,7 @@ func TestPostgresProductRepository_Add(t *testing.T) {
 				mock.ExpectQuery("INSERT INTO categories").
 					WithArgs("Books").
 					WillReturnRows(catRows)
-				
+
 				mock.ExpectExec("INSERT INTO product_categories").
 					WithArgs(2, 3).
 					WillReturnResult(sqlmock.NewResult(1, 1))
@@ -553,4 +553,3 @@ func BenchmarkPostgresProductRepository_GetMetrics(b *testing.B) {
 		_ = repo.GetMetrics()
 	}
 }
-

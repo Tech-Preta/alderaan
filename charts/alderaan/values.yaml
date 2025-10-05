@@ -1,25 +1,86 @@
 # Default values for alderaan chart
+
+# Number of replicas (ignored if autoscaling is enabled)
 replicaCount: 3
 
+# Image configuration
 image:
   repository: alderaan/api
   pullPolicy: IfNotPresent
   tag: "1.0.0"
 
+# Image pull secrets for private registries
+imagePullSecrets: []
+# - name: myregistrykey
+
+# Override the name of the chart
+nameOverride: ""
+fullnameOverride: ""
+
+# Service Account configuration
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# Pod annotations
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "8080"
+  prometheus.io/path: "/metrics"
+
+# Pod labels
+podLabels: {}
+
+# Pod security context
+podSecurityContext:
+  fsGroup: 1001
+  runAsNonRoot: true
+  runAsUser: 1001
+
+# Container security context
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1001
+
+# Service configuration
 service:
   type: ClusterIP
   port: 80
   targetPort: 8080
+  # nodePort: 30080  # Only for NodePort type
+  annotations: {}
 
+# Ingress configuration
 ingress:
   enabled: true
   className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    # cert-manager.io/cluster-issuer: "letsencrypt-prod"
   hosts:
     - host: alderaan.example.com
       paths:
         - path: /
           pathType: Prefix
+  tls:
+    - secretName: alderaan-tls
+      hosts:
+        - alderaan.example.com
 
+# Resource limits and requests
 resources:
   limits:
     cpu: 500m
@@ -28,29 +89,132 @@ resources:
     cpu: 250m
     memory: 256Mi
 
+# Liveness probe configuration
+livenessProbe:
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+# Readiness probe configuration
+readinessProbe:
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+# Horizontal Pod Autoscaling
 autoscaling:
   enabled: true
   minReplicas: 3
   maxReplicas: 10
   targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Percent
+          value: 10
+          periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+        - type: Percent
+          value: 100
+          periodSeconds: 15
+        - type: Pods
+          value: 4
+          periodSeconds: 15
+      selectPolicy: Max
 
+# Application configuration
 config:
   server:
     port: "8080"
     ginMode: "release"
 
+  database:
+    sslMode: "require"
+    maxOpenConns: "25"
+    maxIdleConns: "25"
+    connMaxLifetime: "5m"
+
+  logging:
+    level: "info"
+    format: "json"
+
+  metrics:
+    enabled: "true"
+    path: "/metrics"
+
+  healthCheck:
+    path: "/health"
+
+  gracefulShutdown:
+    timeout: "30s"
+
+# PostgreSQL subchart configuration
 postgresql:
   enabled: true
   auth:
     username: alderaan
     password: alderaan123
     database: alderaan_db
+  primary:
+    service:
+      ports:
+        postgresql: 5432
+    persistence:
+      enabled: true
+      size: 8Gi
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 250m
+        memory: 256Mi
 
-serviceAccount:
-  create: true
+# External database configuration (when postgresql.enabled = false)
+externalDatabase:
+  host: ""
+  port: 5432
+  username: ""
+  password: ""
+  database: ""
+  existingSecret: ""
+  existingSecretPasswordKey: "password"
 
-podAnnotations:
-  prometheus.io/scrape: "true"
-  prometheus.io/port: "8080"
-  prometheus.io/path: "/metrics"
+# Additional environment variables
+extraEnvVars: []
+# - name: FOO
+#   value: "bar"
 
+# Additional environment variables from ConfigMaps or Secrets
+extraEnvFrom: []
+# - configMapRef:
+#     name: extra-configmap
+# - secretRef:
+#     name: extra-secret
+
+# Additional volumes
+volumes: []
+# - name: extra-volume
+#   configMap:
+#     name: extra-configmap
+
+# Additional volume mounts
+volumeMounts: []
+# - name: extra-volume
+#   mountPath: /etc/extra-config
+#   readOnly: true
+
+# Node selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity rules
+affinity: {}

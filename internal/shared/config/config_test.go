@@ -12,7 +12,7 @@ func TestLoad(t *testing.T) {
 		"DB_HOST", "DB_PORT", "DB_USER", "DB_PASSWORD",
 		"DB_NAME", "DB_SSLMODE", "SERVER_PORT",
 	}
-	
+
 	for _, key := range envVars {
 		originalEnv[key] = os.Getenv(key)
 	}
@@ -186,4 +186,3 @@ func BenchmarkLoad(b *testing.B) {
 		_ = Load()
 	}
 }
-

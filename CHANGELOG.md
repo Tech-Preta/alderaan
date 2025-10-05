@@ -333,7 +333,7 @@ Este projeto está licenciado sob a Licença MIT.
 
 ---
 
-**Formato**: [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/)  
+**Formato**: [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/)
 **Versionamento**: [Semantic Versioning](https://semver.org/lang/pt-BR/)
 
 [1.0.0]: https://github.com/williamkoller/golang-domain-driven-design/releases/tag/v1.0.0

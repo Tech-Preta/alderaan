@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"errors"
-	
+
 	"github.com/gin-gonic/gin"
 	product_repository "github.com/williamkoller/golang-domain-driven-design/internal/domain/product/repository"
 	product_entity "github.com/williamkoller/golang-domain-driven-design/internal/domain/product/entity"
@@ -136,7 +136,7 @@ func TestSetupProductRouter(t *testing.T) {
 
 	// Verificar que o router foi configurado corretamente
 	routes := router.Routes()
-	
+
 	expectedRoutes := map[string]bool{
 		"GET-/metrics":              false,
 		"GET-/swagger/*any":         false,
@@ -476,4 +476,3 @@ func BenchmarkProductRouter_APIv1Products(b *testing.B) {
 		router.ServeHTTP(w, req)
 	}
 }
-

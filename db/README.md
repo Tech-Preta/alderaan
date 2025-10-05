@@ -58,7 +58,7 @@ CREATE INDEX idx_product_categories_category_id ON product_categories(category_i
 
 ```sql
 -- Atualiza updated_at automaticamente ao modificar produto
-CREATE TRIGGER update_products_updated_at 
+CREATE TRIGGER update_products_updated_at
 BEFORE UPDATE ON products
 FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 ```
@@ -153,7 +153,7 @@ psql -h localhost -p 5432 -U alderaan -d alderaan_db
 ### **Ver Todos os Produtos**
 
 ```sql
-SELECT 
+SELECT
     p.id,
     p.name,
     p.sku,
@@ -170,7 +170,7 @@ ORDER BY p.created_at DESC;
 ### **Produtos por Categoria**
 
 ```sql
-SELECT 
+SELECT
     c.name as category,
     COUNT(p.id) as total_products,
     AVG(p.price / 100.0) as avg_price_dollars
@@ -184,7 +184,7 @@ ORDER BY total_products DESC;
 ### **Produtos Mais Caros**
 
 ```sql
-SELECT 
+SELECT
     name,
     sku,
     price / 100.0 as price_dollars
@@ -196,7 +196,7 @@ LIMIT 10;
 ### **Estatísticas Gerais**
 
 ```sql
-SELECT 
+SELECT
     COUNT(*) as total_products,
     SUM(price) / 100.0 as total_value_dollars,
     AVG(price) / 100.0 as avg_price_dollars,
@@ -208,7 +208,7 @@ FROM products;
 ### **Histórico de Migrations do Flyway**
 
 ```sql
-SELECT 
+SELECT
     installed_rank,
     version,
     description,
@@ -368,7 +368,7 @@ docker-compose up -d postgres
 
 ```sql
 -- Ver queries lentas
-SELECT 
+SELECT
     pid,
     now() - query_start as duration,
     query
@@ -378,7 +378,7 @@ WHERE state = 'active'
 ORDER BY duration DESC;
 
 -- Ver índices não utilizados
-SELECT 
+SELECT
     schemaname,
     tablename,
     indexname,
@@ -394,7 +394,7 @@ ORDER BY schemaname, tablename;
 
 ```sql
 -- Ver tamanho das tabelas
-SELECT 
+SELECT
     schemaname,
     tablename,
     pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) AS size

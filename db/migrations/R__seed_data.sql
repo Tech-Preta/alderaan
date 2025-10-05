@@ -71,4 +71,3 @@ INSERT INTO product_categories (product_id, category_id)
 SELECT p.id, c.id FROM products p, categories c
 WHERE p.name = 'Memória RAM 16GB' AND c.name IN ('Computadores')
 ON CONFLICT DO NOTHING;
-

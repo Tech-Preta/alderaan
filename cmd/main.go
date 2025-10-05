@@ -21,15 +21,15 @@ import (
 	shared_events "github.com/williamkoller/golang-domain-driven-design/internal/shared/domain/events"
 )
 
-// @title           Servidor HTTP com Domain Driven Design
-// @version         1.0
-// @description     API RESTful com DDD, Gin e Graceful Shutdown
-// @contact.name    API Support
-// @contact.url     https://github.com/williamkoller
-// @license.name    MIT
-// @license.url     https://opensource.org/licenses/MIT
-// @host            localhost:8080
-// @BasePath        /api/v1
+//	@title			Servidor HTTP com Domain Driven Design
+//	@version		1.0
+//	@description	API RESTful com DDD, Gin e Graceful Shutdown
+//	@contact.name	API Support
+//	@contact.url	https://github.com/williamkoller
+//	@license.name	MIT
+//	@license.url	https://opensource.org/licenses/MIT
+//	@host			localhost:8080
+//	@BasePath		/api/v1
 
 func main() {
 	// Carregar configurações

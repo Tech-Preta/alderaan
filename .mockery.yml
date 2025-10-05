@@ -1,0 +1,6 @@
+with-expecter: true
+packages:
+  github.com/Tech-Preta/alderaan:
+    config:
+      all: true
+      recursive: true

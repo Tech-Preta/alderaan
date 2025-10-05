@@ -34,16 +34,17 @@ type ErrorResponse struct {
 }
 
 // Create godoc
-// @Summary      Criar um novo produto
-// @Description  Cria um novo produto com nome, SKU, categorias e preço
-// @Tags         products
-// @Accept       json
-// @Produce      json
-// @Param        product  body      CreateProductInput  true  "Dados do produto"
-// @Success      201      {object}  product_entity.Product
-// @Failure      400      {object}  ErrorResponse
-// @Failure      409      {object}  ErrorResponse
-// @Router       /products [post]
+//
+//	@Summary		Criar um novo produto
+//	@Description	Cria um novo produto com nome, SKU, categorias e preço
+//	@Tags			products
+//	@Accept			json
+//	@Produce		json
+//	@Param			product	body		CreateProductInput	true	"Dados do produto"
+//	@Success		201		{object}	product_entity.Product
+//	@Failure		400		{object}	ErrorResponse
+//	@Failure		409		{object}	ErrorResponse
+//	@Router			/products [post]
 func (h *ProductHandler) Create(c *gin.Context) {
 	var input CreateProductInput
 
@@ -71,26 +72,28 @@ func (h *ProductHandler) Create(c *gin.Context) {
 }
 
 // FindAll godoc
-// @Summary      Listar todos os produtos
-// @Description  Retorna uma lista com todos os produtos cadastrados
-// @Tags         products
-// @Produce      json
-// @Success      200  {array}   product_entity.Product
-// @Router       /products [get]
+//
+//	@Summary		Listar todos os produtos
+//	@Description	Retorna uma lista com todos os produtos cadastrados
+//	@Tags			products
+//	@Produce		json
+//	@Success		200	{array}	product_entity.Product
+//	@Router			/products [get]
 func (h *ProductHandler) FindAll(c *gin.Context) {
 	products, _ := h.repo.Find()
 	c.JSON(http.StatusOK, products)
 }
 
 // FindOne godoc
-// @Summary      Buscar produto por nome
-// @Description  Retorna um produto específico pelo nome
-// @Tags         products
-// @Produce      json
-// @Param        name  path      string  true  "Nome do produto"
-// @Success      200   {object}  product_entity.Product
-// @Failure      404   {object}  ErrorResponse
-// @Router       /products/{name} [get]
+//
+//	@Summary		Buscar produto por nome
+//	@Description	Retorna um produto específico pelo nome
+//	@Tags			products
+//	@Produce		json
+//	@Param			name	path		string	true	"Nome do produto"
+//	@Success		200		{object}	product_entity.Product
+//	@Failure		404		{object}	ErrorResponse
+//	@Router			/products/{name} [get]
 func (h *ProductHandler) FindOne(c *gin.Context) {
 	name := c.Param("name")
 	product, err := h.repo.FindOne(name)

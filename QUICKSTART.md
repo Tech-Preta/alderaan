@@ -92,8 +92,8 @@ make db-connect
 # No psql, execute:
 SELECT * FROM products;
 SELECT * FROM categories;
-SELECT p.name, c.name as category 
-FROM products p 
+SELECT p.name, c.name as category
+FROM products p
 JOIN product_categories pc ON p.id = pc.product_id
 JOIN categories c ON pc.category_id = c.id;
 
@@ -297,4 +297,3 @@ make db-migrate
 ---
 
 **🚀 Pronto! Agora você tem uma API completa com DDD, PostgreSQL e monitoramento!**
-

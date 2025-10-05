@@ -86,12 +86,12 @@ histogram_quantile(0.999, sum(rate(http_request_duration_seconds_bucket[5m])) by
 
 ```promql
 # P95 por endpoint
-histogram_quantile(0.95, 
+histogram_quantile(0.95,
   sum(rate(http_request_duration_seconds_bucket[5m])) by (le, method, path)
 )
 
 # P50 apenas para GET /products
-histogram_quantile(0.50, 
+histogram_quantile(0.50,
   sum(rate(http_request_duration_seconds_bucket{method="GET",path="/api/v1/products"}[5m])) by (le)
 )
 ```
@@ -100,12 +100,12 @@ histogram_quantile(0.50,
 
 ```promql
 # Latência média geral
-rate(http_request_duration_seconds_sum[5m]) / 
+rate(http_request_duration_seconds_sum[5m]) /
 rate(http_request_duration_seconds_count[5m])
 
 # Latência média por endpoint
-rate(http_request_duration_seconds_sum[5m]) / 
-rate(http_request_duration_seconds_count[5m]) 
+rate(http_request_duration_seconds_sum[5m]) /
+rate(http_request_duration_seconds_count[5m])
 by (method, path)
 ```
 
@@ -190,15 +190,15 @@ bottomk(5, sum(rate(http_requests_total[5m])) by (method, path))
 
 ```promql
 # Taxa de erro geral (porcentagem)
-sum(rate(http_request_errors_total[5m])) / 
+sum(rate(http_request_errors_total[5m])) /
 sum(rate(http_requests_total[5m])) * 100
 
 # Taxa de erro simplificada (0-1)
-sum(rate(http_request_errors_total[5m])) / 
+sum(rate(http_request_errors_total[5m])) /
 sum(rate(http_requests_total[5m]))
 
 # Taxa de erro por endpoint
-sum(rate(http_request_errors_total[5m])) by (path) / 
+sum(rate(http_request_errors_total[5m])) by (path) /
 sum(rate(http_requests_total[5m])) by (path)
 ```
 
@@ -222,11 +222,11 @@ sum(rate(http_request_errors_total[5m])) by (path)
 
 ```promql
 # Taxa de erros 5xx
-sum(rate(http_requests_total{status=~"5.."}[5m])) / 
+sum(rate(http_requests_total{status=~"5.."}[5m])) /
 sum(rate(http_requests_total[5m]))
 
 # Taxa de erros 4xx
-sum(rate(http_requests_total{status=~"4.."}[5m])) / 
+sum(rate(http_requests_total{status=~"4.."}[5m])) /
 sum(rate(http_requests_total[5m]))
 ```
 
@@ -238,7 +238,7 @@ topk(5, sum(rate(http_request_errors_total[5m])) by (path))
 
 # Endpoints com taxa de erro > 5%
 (
-  sum(rate(http_request_errors_total[5m])) by (path) / 
+  sum(rate(http_request_errors_total[5m])) by (path) /
   sum(rate(http_requests_total[5m])) by (path)
 ) > 0.05
 ```
@@ -350,7 +350,7 @@ products_total_value / 100 * 5
 products_total_value - products_total_value offset 24h
 
 # Taxa de crescimento do valor
-((products_total_value - products_total_value offset 1h) / 
+((products_total_value - products_total_value offset 1h) /
  products_total_value offset 1h) * 100
 ```
 
@@ -469,7 +469,7 @@ sum(rate(http_requests_total[5m])) * 100
 
 ```promql
 # Verificar se P95 está abaixo de 1 segundo
-histogram_quantile(0.95, 
+histogram_quantile(0.95,
   sum(rate(http_request_duration_seconds_bucket[5m])) by (le)
 ) < 1
 ```
@@ -500,7 +500,7 @@ histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by 
 
 ```promql
 # Comparar tráfego atual vs 1 hora atrás
-(sum(rate(http_requests_total[5m])) - 
+(sum(rate(http_requests_total[5m])) -
  sum(rate(http_requests_total[5m] offset 1h))) /
 sum(rate(http_requests_total[5m] offset 1h)) * 100
 ```
@@ -620,8 +620,8 @@ http_in_flight_requests > 50
 
 ```promql
 # Qual endpoint é mais lento? (Top 5)
-topk(5, 
-  histogram_quantile(0.95, 
+topk(5,
+  histogram_quantile(0.95,
     sum(rate(http_request_duration_seconds_bucket[5m])) by (le, path)
   )
 )
@@ -643,7 +643,7 @@ increase(products_created_total[1d:] @ start())
 topk(1, deriv(products_by_category[1h]))
 
 # Valor médio de produto criado por hora
-(products_total_value - products_total_value offset 1h) / 
+(products_total_value - products_total_value offset 1h) /
 (products_total - products_total offset 1h)
 ```
 
@@ -718,4 +718,3 @@ sum(rate(http_requests_total[5m])) by (method, path)
 ---
 
 **Anterior:** [Flyway Migrations](09-flyway-migrations.md) | **Próximo:** [Documentação](README.md) | **Voltar:** [README Principal](../README.md)
-

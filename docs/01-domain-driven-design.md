@@ -88,7 +88,7 @@ Operações que não pertencem naturalmente a nenhuma entidade ou value object.
 type PriceCalculatorService struct {}
 
 func (s *PriceCalculatorService) CalculateDiscount(
-    product Product, 
+    product Product,
     coupon Coupon,
 ) float64 {
     // Lógica de cálculo de desconto
@@ -165,9 +165,9 @@ internal/domain/product/
 ### Entidade com Validação de Negócio
 
 ```go
-func NewProduct(name string, sku int, categories []string, price int, 
+func NewProduct(name string, sku int, categories []string, price int,
     dispatcher *EventDispatcher) (*Product, *ProductCreatedEvent, error) {
-    
+
     ok, err := Validate(name, sku, categories, price)
     if !ok {
         return nil, nil, err
@@ -175,9 +175,9 @@ func NewProduct(name string, sku int, categories []string, price int,
 
     p := &Product{Name: name, Sku: sku, Categories: categories, Price: price}
 
-    event := NewProductCreatedEvent(p.GetName(), p.GetSku(), 
+    event := NewProductCreatedEvent(p.GetName(), p.GetSku(),
         p.GetCategories(), p.GetPrice())
-    
+
     if dispatcher != nil {
         dispatcher.Dispatch(event.EventName(), event)
     }
@@ -222,4 +222,3 @@ func Validate(name string, sku int, categories []string, price int) (bool, error
 ---
 
 **Próximo:** [Arquitetura Limpa](02-clean-architecture.md)
-

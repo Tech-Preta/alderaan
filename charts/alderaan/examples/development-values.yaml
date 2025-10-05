@@ -1,0 +1,77 @@
+# Development environment values
+# For local development and testing
+
+# Use local/development image
+image:
+  repository: localhost:5000/alderaan/api
+  tag: "dev"
+  pullPolicy: Always
+
+# Lower resource requirements for development
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# Disable autoscaling in development
+autoscaling:
+  enabled: false
+
+replicaCount: 1
+
+# Development database configuration
+postgresql:
+  enabled: true
+  auth:
+    username: alderaan_dev
+    password: dev123
+    database: alderaan_dev_db
+  primary:
+    persistence:
+      enabled: false # Use emptyDir for faster startup
+    resources:
+      limits:
+        cpu: 200m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+
+# Development application configuration
+config:
+  server:
+    ginMode: "debug"
+
+  logging:
+    level: "debug"
+    format: "text"
+
+  database:
+    sslMode: "disable"
+    maxOpenConns: "10"
+    maxIdleConns: "5"
+
+# Disable ingress for development (use port-forward)
+ingress:
+  enabled: false
+
+# Development service configuration
+service:
+  type: NodePort
+  nodePort: 30080
+
+# Relaxed security for development
+podSecurityContext: {}
+securityContext: {}
+
+# Fast startup probes for development
+livenessProbe:
+  initialDelaySeconds: 10
+  periodSeconds: 5
+
+readinessProbe:
+  initialDelaySeconds: 5
+  periodSeconds: 5

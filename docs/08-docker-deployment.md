@@ -298,19 +298,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Build Docker image
         run: docker build -t alderaan-api:${{ github.sha }} .
-      
+
       - name: Run tests
         run: docker run alderaan-api:${{ github.sha }} go test ./...
-      
+
       - name: Login to DockerHub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      
+
       - name: Push to DockerHub
         run: |
           docker tag alderaan-api:${{ github.sha }} user/alderaan-api:latest
@@ -495,4 +495,3 @@ docker system prune -a --volumes
 ---
 
 **Anterior:** [Prometheus Monitoring](07-prometheus-monitoring.md) | **Voltar ao início:** [README](README.md)
-

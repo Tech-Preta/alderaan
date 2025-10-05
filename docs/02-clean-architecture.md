@@ -91,16 +91,16 @@ type CreateProductUseCase struct {
 
 func (uc *CreateProductUseCase) Execute(input CreateProductInput) error {
     product, event, err := NewProduct(
-        input.Name, 
-        input.Sku, 
-        input.Categories, 
+        input.Name,
+        input.Sku,
+        input.Categories,
         input.Price,
         uc.dispatcher,
     )
     if err != nil {
         return err
     }
-    
+
     return uc.repo.Add(*product)
 }
 ```
@@ -136,10 +136,10 @@ func (h *ProductHandler) Create(c *gin.Context) {
     }
 
     product, _, err := product_entity.NewProduct(
-        input.Name, 
-        input.Sku, 
-        input.Categories, 
-        input.Price, 
+        input.Name,
+        input.Sku,
+        input.Categories,
+        input.Price,
         h.dispatcher,
     )
     if err != nil {
@@ -214,9 +214,9 @@ func (m *MockProductRepository) Add(product Product) error {
 func TestCreateProduct(t *testing.T) {
     mockRepo := &MockProductRepository{}
     dispatcher := NewEventDispatcher()
-    
+
     handler := NewProductHandler(mockRepo, dispatcher)
-    
+
     // Teste sem dependências externas
 }
 ```
@@ -378,4 +378,3 @@ func (h *ProductHandler) Create(c *gin.Context) {
 ---
 
 **Anterior:** [Domain-Driven Design](01-domain-driven-design.md) | **Próximo:** [Event Dispatcher](03-event-dispatcher.md)
-

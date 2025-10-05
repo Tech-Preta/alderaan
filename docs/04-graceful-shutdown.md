@@ -33,9 +33,9 @@ func main() {
 ```go
 func main() {
     server := &http.Server{Addr: ":8080", Handler: handler}
-    
+
     go server.ListenAndServe()
-    
+
     GracefulShutdown(server, 5*time.Second)
 }
 ```
@@ -136,7 +136,7 @@ func main() {
 func GracefulShutdown(server *http.Server, timeout time.Duration) {
     // 1. Criar canal para receber sinais
     quit := make(chan os.Signal, 1)
-    
+
     // 2. Registrar quais sinais queremos capturar
     signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
@@ -196,7 +196,7 @@ ctx := context.Background()
 server.Shutdown(ctx)
 ```
 
-**Recomendação:** 
+**Recomendação:**
 - **APIs rápidas**: 5-10 segundos
 - **APIs com operações longas**: 30-60 segundos
 - **Workers de background**: 2-5 minutos
@@ -483,4 +483,3 @@ func GracefulShutdown(server *http.Server, timeout time.Duration) {
 ---
 
 **Anterior:** [Event Dispatcher](03-event-dispatcher.md) | **Próximo:** [RESTful API com Gin](05-restful-api-gin.md)
-

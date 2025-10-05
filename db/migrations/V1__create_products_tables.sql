@@ -54,4 +54,3 @@ COMMENT ON TABLE product_categories IS 'Relacionamento many-to-many entre produt
 COMMENT ON COLUMN products.name IS 'Nome do produto (único)';
 COMMENT ON COLUMN products.sku IS 'Stock Keeping Unit - código único do produto';
 COMMENT ON COLUMN products.price IS 'Preço em centavos (evita problemas com ponto flutuante)';
-

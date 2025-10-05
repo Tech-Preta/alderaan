@@ -1,0 +1,73 @@
+run:
+  concurrency: 4
+  timeout: 5m
+
+linters:
+  enable:
+    - errcheck
+    - govet
+    - staticcheck
+    - gosec
+    - misspell
+    - gofmt
+    - goimports
+    - revive
+    - unused
+    - ineffassign
+
+linters-settings:
+  revive:
+    rules:
+      - name: var-naming
+        disabled: true
+      - name: unused-parameter
+        disabled: true
+      - name: blank-imports
+        disabled: true
+
+  depguard:
+    rules:
+      main:
+        allow:
+          - $gostd
+          - github.com/Tech-Preta/alderaan
+          - github.com/gin-gonic/gin
+          - github.com/lib/pq
+          - github.com/golang-migrate/migrate/v4
+          - github.com/golang-migrate/migrate/v4/database/postgres
+          - github.com/golang-migrate/migrate/v4/source/file
+          - github.com/joho/godotenv
+          - github.com/prometheus/client_golang/prometheus
+          - github.com/prometheus/client_golang/prometheus/promhttp
+          - github.com/swaggo/gin-swagger
+          - github.com/swaggo/files
+          - github.com/stretchr/testify/suite
+          - github.com/stretchr/testify/mock
+          - github.com/stretchr/testify/assert
+          - github.com/stretchr/testify/require
+          - github.com/google/uuid
+          - go.uber.org/zap
+          - gorm.io/gorm
+          - gorm.io/driver/postgres
+          - github.com/DATA-DOG/go-sqlmock
+          - github.com/prometheus/client_golang/prometheus/testutil
+        deny:
+          - pkg: github.com/sirupsen/logrus
+            desc: Should be replaced by go.uber.org/zap package
+          - pkg: log
+            desc: Should be replaced by go.uber.org/zap package
+          - pkg: github.com/pkg/errors
+            desc: Should be replaced by standard lib errors package
+
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - errcheck
+        - unused
+    - path: (.+)_mock\.go
+      linters:
+        - all
+    - source: "^//go:generate "
+      linters:
+        - all

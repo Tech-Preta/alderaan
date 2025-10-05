@@ -183,4 +183,3 @@ groups:
         annotations:
           summary: "Scrape de métricas muito lento"
           description: "Levando {{ $value }}s para coletar métricas (threshold: 5s)"
-

@@ -243,7 +243,7 @@ touch R__update_product_stats_view.sql
 -- View de estatísticas de produtos (atualiza sempre que mudar)
 
 CREATE OR REPLACE VIEW product_stats AS
-SELECT 
+SELECT
     COUNT(*) as total_products,
     SUM(price) as total_value,
     AVG(price) as avg_price,
@@ -335,7 +335,7 @@ COMMIT;
 DO $$
 BEGIN
     IF NOT EXISTS (
-        SELECT 1 FROM information_schema.columns 
+        SELECT 1 FROM information_schema.columns
         WHERE table_name='products' AND column_name='image_url'
     ) THEN
         ALTER TABLE products ADD COLUMN image_url VARCHAR(500);
@@ -374,10 +374,10 @@ steps:
     run: |
       docker-compose up -d postgres
       docker-compose up flyway
-      
+
   - name: Validate Migrations
     run: docker-compose run --rm flyway validate
-    
+
   - name: Deploy Application
     run: docker-compose up -d api
 ```
@@ -404,7 +404,7 @@ psql alderaan_db < backup_20241004.sql
 
 ```sql
 -- Ver todas as migrations aplicadas
-SELECT 
+SELECT
     installed_rank,
     version,
     description,
@@ -543,4 +543,3 @@ ENVIRONMENT=production make db-migrate
 ---
 
 **Anterior:** [Docker & Deployment](08-docker-deployment.md) | **Próximo:** [Database](../db/README.md) | **Voltar ao início:** [README](README.md)
-

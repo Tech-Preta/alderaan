@@ -13,6 +13,9 @@ keywords:
   - prometheus
   - grafana
   - postgresql
+  - kubernetes
+  - microservices
+  - observability
 
 maintainers:
   - name: Natália Granato
@@ -20,7 +23,21 @@ maintainers:
   - name: William Koller
     email: william.koller@example.com
 
-home: https://github.com/williamkoller/golang-domain-driven-design
+home: https://github.com/Tech-Preta/alderaan
 sources:
-  - https://github.com/williamkoller/golang-domain-driven-design
+  - https://github.com/Tech-Preta/alderaan
 
+# Chart dependencies
+dependencies:
+  - name: postgresql
+    version: "13.2.24"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: postgresql.enabled
+
+# Minimum Kubernetes version
+kubeVersion: ">=1.20.0-0"
+
+# Annotations for the chart
+annotations:
+  category: Application
+  licenses: MIT

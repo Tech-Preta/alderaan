@@ -121,7 +121,7 @@ r.GET("/users/:name/books/:title", func(c *gin.Context) {
 r.GET("/search", func(c *gin.Context) {
     query := c.Query("q")           // "golang"
     page := c.DefaultQuery("page", "1")  // "1" (valor padrão)
-    
+
     c.JSON(200, gin.H{
         "query": query,
         "page":  page,
@@ -214,12 +214,12 @@ type LoginForm struct {
 
 r.POST("/login", func(c *gin.Context) {
     var form LoginForm
-    
+
     if err := c.ShouldBind(&form); err != nil {
         c.JSON(400, gin.H{"error": err.Error()})
         return
     }
-    
+
     c.JSON(200, gin.H{"username": form.Username})
 })
 ```
@@ -299,8 +299,8 @@ func Logger() gin.HandlerFunc {
         // Após handler
         latency := time.Since(start)
         status := c.Writer.Status()
-        
-        log.Printf("[%d] %s %s - %v", status, c.Request.Method, 
+
+        log.Printf("[%d] %s %s - %v", status, c.Request.Method,
             c.Request.URL.Path, latency)
     }
 }
@@ -317,7 +317,7 @@ r.Use(gin.Recovery())  // Recovery de panics
 func AuthMiddleware() gin.HandlerFunc {
     return func(c *gin.Context) {
         token := c.GetHeader("Authorization")
-        
+
         if token == "" {
             c.JSON(401, gin.H{"error": "unauthorized"})
             c.Abort()  // Para execução
@@ -333,7 +333,7 @@ func AuthMiddleware() gin.HandlerFunc {
 
         // Passar dados para próximo handler
         c.Set("user_id", getUserIDFromToken(token))
-        
+
         c.Next()  // Continuar para próximo handler
     }
 }
@@ -352,9 +352,9 @@ admin.Use(AuthMiddleware())
 func CORSMiddleware() gin.HandlerFunc {
     return func(c *gin.Context) {
         c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-        c.Writer.Header().Set("Access-Control-Allow-Methods", 
+        c.Writer.Header().Set("Access-Control-Allow-Methods",
             "GET, POST, PUT, DELETE, OPTIONS")
-        c.Writer.Header().Set("Access-Control-Allow-Headers", 
+        c.Writer.Header().Set("Access-Control-Allow-Headers",
             "Content-Type, Authorization")
 
         if c.Request.Method == "OPTIONS" {
@@ -428,7 +428,7 @@ type ProductHandler struct {
     dispatcher *shared_events.EventDispatcher
 }
 
-func NewProductHandler(repo *product_repository.ProductRepository, 
+func NewProductHandler(repo *product_repository.ProductRepository,
     dispatcher *shared_events.EventDispatcher) *ProductHandler {
     return &ProductHandler{repo, dispatcher}
 }
@@ -471,24 +471,24 @@ func (h *ProductHandler) Create(c *gin.Context) {
 func (h *ProductHandler) FindAll(c *gin.Context) {
     products, err := h.repo.Find()
     if err != nil {
-        c.JSON(http.StatusInternalServerError, 
+        c.JSON(http.StatusInternalServerError,
             gin.H{"error": "failed to fetch products"})
         return
     }
-    
+
     c.JSON(http.StatusOK, products)
 }
 
 // GET /api/v1/products/:name
 func (h *ProductHandler) FindOne(c *gin.Context) {
     name := c.Param("name")
-    
+
     product, err := h.repo.FindOne(name)
     if err != nil {
         c.JSON(http.StatusNotFound, gin.H{"error": "product not found"})
         return
     }
-    
+
     c.JSON(http.StatusOK, product)
 }
 ```
@@ -650,4 +650,3 @@ server := &http.Server{
 ---
 
 **Anterior:** [Graceful Shutdown](04-graceful-shutdown.md) | **Próximo:** [Swagger Documentation](06-swagger-documentation.md)
-
