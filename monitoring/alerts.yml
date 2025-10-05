@@ -1,0 +1,186 @@
+# Regras de alerta para o Prometheus
+
+groups:
+  - name: alderaan_api_alerts
+    interval: 30s
+    rules:
+      # Golden Signal: Latência Alta
+      - alert: HighLatencyP99
+        expr: |
+          histogram_quantile(0.99,
+            sum(rate(http_request_duration_seconds_bucket[5m])) by (endpoint, le)
+          ) > 1
+        for: 5m
+        labels:
+          severity: warning
+          golden_signal: latency
+        annotations:
+          summary: "Latência P99 alta no endpoint {{ $labels.endpoint }}"
+          description: "P99 está em {{ $value }}s (threshold: 1s)"
+          dashboard: "http://grafana:3000/d/alderaan-api"
+
+      - alert: CriticalHighLatencyP99
+        expr: |
+          histogram_quantile(0.99,
+            sum(rate(http_request_duration_seconds_bucket[5m])) by (endpoint, le)
+          ) > 5
+        for: 2m
+        labels:
+          severity: critical
+          golden_signal: latency
+        annotations:
+          summary: "Latência P99 CRÍTICA no endpoint {{ $labels.endpoint }}"
+          description: "P99 está em {{ $value }}s (threshold: 5s)"
+
+      # Golden Signal: Taxa de Erro Alta
+      - alert: HighErrorRate
+        expr: |
+          (
+            sum(rate(http_request_errors_total[5m])) by (endpoint)
+            /
+            sum(rate(http_requests_total[5m])) by (endpoint)
+          ) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          golden_signal: errors
+        annotations:
+          summary: "Taxa de erro alta no endpoint {{ $labels.endpoint }}"
+          description: "Taxa de erro: {{ $value | humanizePercentage }} (threshold: 5%)"
+
+      - alert: CriticalErrorRate
+        expr: |
+          (
+            sum(rate(http_request_errors_total[5m])) by (endpoint)
+            /
+            sum(rate(http_requests_total[5m])) by (endpoint)
+          ) > 0.20
+        for: 2m
+        labels:
+          severity: critical
+          golden_signal: errors
+        annotations:
+          summary: "Taxa de erro CRÍTICA no endpoint {{ $labels.endpoint }}"
+          description: "Taxa de erro: {{ $value | humanizePercentage }} (threshold: 20%)"
+
+      # Golden Signal: Saturação Alta
+      - alert: HighConcurrentRequests
+        expr: http_in_flight_requests > 100
+        for: 5m
+        labels:
+          severity: warning
+          golden_signal: saturation
+        annotations:
+          summary: "Muitas requisições simultâneas"
+          description: "{{ $value }} requisições em andamento (threshold: 100)"
+
+      - alert: CriticalConcurrentRequests
+        expr: http_in_flight_requests > 500
+        for: 2m
+        labels:
+          severity: critical
+          golden_signal: saturation
+        annotations:
+          summary: "CRÍTICO: Sistema saturado"
+          description: "{{ $value }} requisições em andamento (threshold: 500)"
+
+      # Golden Signal: Tráfego - Queda Súbita
+      - alert: TrafficDropped
+        expr: |
+          sum(rate(http_requests_total[5m])) < 0.5
+          and
+          sum(rate(http_requests_total[30m] offset 1h)) > 5
+        for: 10m
+        labels:
+          severity: warning
+          golden_signal: traffic
+        annotations:
+          summary: "Queda súbita de tráfego detectada"
+          description: "Tráfego atual: {{ $value }} req/s (era >5 req/s há 1h)"
+
+      # Golden Signal: Tráfego - Pico Anormal
+      - alert: TrafficSpike
+        expr: |
+          sum(rate(http_requests_total[5m]))
+          >
+          sum(rate(http_requests_total[1h] offset 24h)) * 3
+        for: 10m
+        labels:
+          severity: warning
+          golden_signal: traffic
+        annotations:
+          summary: "Pico de tráfego detectado"
+          description: "Tráfego 3x maior que média de 24h atrás"
+
+  - name: business_metrics_alerts
+    interval: 1m
+    rules:
+      # Negócio: Nenhum produto criado
+      - alert: NoProductsCreated
+        expr: increase(products_created_total[1h]) == 0
+        for: 2h
+        labels:
+          severity: warning
+          type: business
+        annotations:
+          summary: "Nenhum produto criado nas últimas 2 horas"
+          description: "Possível problema no fluxo de criação de produtos"
+
+      # Negócio: Inventário vazio
+      - alert: EmptyInventory
+        expr: products_total == 0
+        for: 5m
+        labels:
+          severity: critical
+          type: business
+        annotations:
+          summary: "Inventário completamente vazio"
+          description: "Não há produtos cadastrados no sistema"
+
+      # Negócio: Valor total muito baixo
+      - alert: LowInventoryValue
+        expr: products_total_value < 1000
+        for: 30m
+        labels:
+          severity: info
+          type: business
+        annotations:
+          summary: "Valor total do inventário baixo"
+          description: "Valor total: ${{ $value }} (threshold: $1000)"
+
+  - name: system_health
+    interval: 30s
+    rules:
+      # Sistema: API Down
+      - alert: APIDown
+        expr: up{job="alderaan-api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          type: system
+        annotations:
+          summary: "API Alderaan está DOWN"
+          description: "Prometheus não consegue fazer scraping da API"
+          action: "Verificar logs e saúde do container/processo"
+
+      # Sistema: API Flapping
+      - alert: APIFlapping
+        expr: changes(up{job="alderaan-api"}[10m]) > 5
+        labels:
+          severity: warning
+          type: system
+        annotations:
+          summary: "API está flapping (reiniciando repetidamente)"
+          description: "API mudou de estado {{ $value }} vezes em 10 minutos"
+
+      # Sistema: Scrape muito lento
+      - alert: SlowScrape
+        expr: scrape_duration_seconds{job="alderaan-api"} > 5
+        for: 5m
+        labels:
+          severity: warning
+          type: system
+        annotations:
+          summary: "Scrape de métricas muito lento"
+          description: "Levando {{ $value }}s para coletar métricas (threshold: 5s)"
+

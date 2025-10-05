@@ -1,0 +1,139 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: alderaan-postgres
+    environment:
+      POSTGRES_USER: alderaan
+      POSTGRES_PASSWORD: alderaan123
+      POSTGRES_DB: alderaan_db
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U alderaan -d alderaan_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - alderaan-network
+    restart: unless-stopped
+
+  # Flyway - Database Migration Tool
+  flyway:
+    image: flyway/flyway:10-alpine
+    container_name: alderaan-flyway
+    command: migrate
+    volumes:
+      - ./db/migrations:/flyway/sql:ro
+      - ./db/migrations/conf/flyway.conf:/flyway/conf/flyway.conf:ro
+    networks:
+      - alderaan-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Alderaan API
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: alderaan-api
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: alderaan
+      DB_PASSWORD: alderaan123
+      DB_NAME: alderaan_db
+      DB_SSLMODE: disable
+      GIN_MODE: release
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      flyway:
+        condition: service_completed_successfully
+    networks:
+      - alderaan-network
+    restart: unless-stopped
+
+  # Prometheus - Sistema de monitoramento
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: alderaan-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/alerts.yml:/etc/prometheus/alerts.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    networks:
+      - alderaan-network
+    restart: unless-stopped
+    depends_on:
+      - api
+
+  # Grafana - Visualização de métricas
+  grafana:
+    image: grafana/grafana:latest
+    container_name: alderaan-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=http://localhost:3000
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    networks:
+      - alderaan-network
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+
+  # Alertmanager - Gerenciamento de alertas
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: alderaan-alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./monitoring/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - alertmanager_data:/alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+      - '--web.external-url=http://localhost:9093'
+    networks:
+      - alderaan-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  alertmanager_data:
+    driver: local
+
+networks:
+  alderaan-network:
+    driver: bridge
+

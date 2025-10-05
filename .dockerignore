@@ -1,0 +1,79 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+LICENSE
+CHANGELOG.md
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
+SECURITY.md
+
+# Binaries
+bin/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test files
+*_test.go
+*.test
+*.out
+coverage.txt
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment files
+.env
+.env.local
+.env.*.local
+config.env
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Build artifacts
+dist/
+build/
+
+# Monitoring data
+monitoring/prometheus_data/
+monitoring/grafana_data/
+monitoring/alertmanager_data/
+
+# Docker
+docker-compose.yml
+Dockerfile
+.dockerignore
+
+# Monitoring configs (não precisa no container da API)
+monitoring/
+
+# Database (não precisa no container da API)
+db/
+
+# Charts (não precisa no container da API)
+charts/
+
+# Makefile e mise
+Makefile
+mise.toml
+
+# Quickstart guide
+QUICKSTART.md
+

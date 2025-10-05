@@ -1,0 +1,131 @@
+# Configuração do Alertmanager
+# https://prometheus.io/docs/alerting/latest/configuration/
+
+global:
+  resolve_timeout: 5m
+  # SMTP configuration (descomente para enviar emails)
+  # smtp_smarthost: 'smtp.gmail.com:587'
+  # smtp_from: 'alertmanager@alderaan.com'
+  # smtp_auth_username: 'your-email@gmail.com'
+  # smtp_auth_password: 'your-app-password'
+  
+  # Slack configuration (descomente para enviar para Slack)
+  # slack_api_url: 'https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK'
+
+# Templates para notificações customizadas
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'
+
+# Rotas de alertas
+route:
+  # Grupo e tempo de espera padrão
+  group_by: ['alertname', 'cluster', 'service']
+  group_wait: 10s          # Espera 10s para agrupar alertas similares
+  group_interval: 10s      # Intervalo entre notificações do mesmo grupo
+  repeat_interval: 12h     # Não repetir notificação pelo menos por 12h
+  
+  # Receptor padrão
+  receiver: 'default'
+  
+  # Rotas específicas por severidade
+  routes:
+    # Alertas críticos - notificação imediata
+    - match:
+        severity: critical
+      receiver: 'critical-alerts'
+      group_wait: 5s
+      repeat_interval: 5m
+      continue: true
+    
+    # Alertas de warning - notificação agrupada
+    - match:
+        severity: warning
+      receiver: 'warning-alerts'
+      group_wait: 30s
+      repeat_interval: 1h
+      continue: true
+    
+    # Alertas info - apenas log
+    - match:
+        severity: info
+      receiver: 'info-alerts'
+      group_wait: 1m
+      repeat_interval: 24h
+
+# Regras de inibição (alertas que silenciam outros)
+inhibit_rules:
+  # Se API está down, não notificar sobre alta latência
+  - source_match:
+      alertname: 'APIDown'
+    target_match:
+      alertname: 'HighLatency'
+    equal: ['service', 'instance']
+  
+  # Se há erro crítico, não notificar sobre warnings
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'service']
+
+# Configuração de receivers (destinos das notificações)
+receivers:
+  # Receiver padrão - apenas log no console
+  - name: 'default'
+    webhook_configs:
+      - url: 'http://localhost:9093/webhook'
+        send_resolved: true
+  
+  # Alertas críticos
+  - name: 'critical-alerts'
+    # Email (descomente e configure)
+    # email_configs:
+    #   - to: 'oncall@alderaan.com'
+    #     subject: '[CRITICAL] {{ .GroupLabels.alertname }}'
+    #     html: |
+    #       <h2>🚨 Alerta Crítico</h2>
+    #       <p><strong>Alerta:</strong> {{ .GroupLabels.alertname }}</p>
+    #       <p><strong>Severidade:</strong> {{ .CommonLabels.severity }}</p>
+    #       <p><strong>Descrição:</strong> {{ .CommonAnnotations.description }}</p>
+    #       <p><strong>Runbook:</strong> <a href="{{ .CommonAnnotations.runbook_url }}">{{ .CommonAnnotations.runbook_url }}</a></p>
+    
+    # Slack (descomente e configure)
+    # slack_configs:
+    #   - channel: '#alerts-critical'
+    #     title: '🚨 [{{ .Status | toUpper }}] {{ .GroupLabels.alertname }}'
+    #     text: |
+    #       *Alerta:* {{ .GroupLabels.alertname }}
+    #       *Severidade:* {{ .CommonLabels.severity }}
+    #       *Descrição:* {{ .CommonAnnotations.description }}
+    #       *Runbook:* {{ .CommonAnnotations.runbook_url }}
+    #     send_resolved: true
+    
+    # Webhook customizado (pode integrar com PagerDuty, Opsgenie, etc)
+    webhook_configs:
+      - url: 'http://localhost:9093/webhook/critical'
+        send_resolved: true
+  
+  # Alertas de warning
+  - name: 'warning-alerts'
+    # Slack (descomente e configure)
+    # slack_configs:
+    #   - channel: '#alerts-warning'
+    #     title: '⚠️ [{{ .Status | toUpper }}] {{ .GroupLabels.alertname }}'
+    #     text: |
+    #       *Alerta:* {{ .GroupLabels.alertname }}
+    #       *Descrição:* {{ .CommonAnnotations.description }}
+    #     send_resolved: true
+    
+    webhook_configs:
+      - url: 'http://localhost:9093/webhook/warning'
+        send_resolved: true
+  
+  # Alertas informativos
+  - name: 'info-alerts'
+    webhook_configs:
+      - url: 'http://localhost:9093/webhook/info'
+        send_resolved: true
+
+# Timeouts
+time_intervals: []
+

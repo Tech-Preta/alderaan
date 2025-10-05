@@ -1,1 +1,75 @@
+# Binários
+bin/
+*.exe
+*.dll
+*.so
+*.dylib
 
+# Test binary, build com Delve
+*.test
+
+# Output da build do Go
+*.out
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Arquivos de configuração sensíveis
+config.env
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+
+# Dados de monitoramento (volumes Docker)
+monitoring/prometheus_data/
+monitoring/grafana_data/
+monitoring/alertmanager_data/
+
+# Dados do banco (volumes Docker)
+postgres_data/
+
+# Documentação Swagger gerada
+docs/docs.go
+docs/swagger.json
+docs/swagger.yaml
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Arquivos de backup
+*.bak
+*.backup
+backup_*.sql
+
+# Coverage
+coverage.txt
+coverage.html
+*.coverprofile
+
+# Vendor (se usar)
+vendor/
+
+# Go workspace files
+go.work
+go.work.sum
+
+# Air (live reload)
+tmp/
+.air.toml
+
+# Mise
+.mise.toml.local

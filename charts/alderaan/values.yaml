@@ -1,0 +1,56 @@
+# Default values for alderaan chart
+replicaCount: 3
+
+image:
+  repository: alderaan/api
+  pullPolicy: IfNotPresent
+  tag: "1.0.0"
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+ingress:
+  enabled: true
+  className: "nginx"
+  hosts:
+    - host: alderaan.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+
+config:
+  server:
+    port: "8080"
+    ginMode: "release"
+
+postgresql:
+  enabled: true
+  auth:
+    username: alderaan
+    password: alderaan123
+    database: alderaan_db
+
+serviceAccount:
+  create: true
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "8080"
+  prometheus.io/path: "/metrics"
+
