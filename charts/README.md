@@ -21,7 +21,25 @@ Chart principal que implanta a aplicação Alderaan com:
 
 ## 🚀 Quick Start
 
-### Instalação Rápida
+### Instalação via OCI Registry (Recomendado)
+
+O chart está publicado no GitHub Container Registry:
+
+```bash
+# Instalar diretamente do registry
+helm install alderaan oci://ghcr.io/tech-preta/helm-charts/alderaan \
+  --version 1.0.0 \
+  --namespace alderaan \
+  --create-namespace
+
+# Com valores customizados
+helm install alderaan oci://ghcr.io/tech-preta/helm-charts/alderaan \
+  --version 1.0.0 \
+  --set replicaCount=3 \
+  --set image.tag=v1.0.0
+```
+
+### Instalação Local
 
 ```bash
 # Instalar com valores padrão
