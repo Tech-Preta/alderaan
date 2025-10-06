@@ -1,0 +1,186 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API RESTful com DDD, Gin e Graceful Shutdown",
+        "title": "Servidor HTTP com Domain Driven Design",
+        "contact": {
+            "name": "API Support",
+            "url": "https://github.com/williamkoller"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
+    "paths": {
+        "/products": {
+            "get": {
+                "description": "Retorna uma lista com todos os produtos cadastrados",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Listar todos os produtos",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/product_entity.Product"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Cria um novo produto com nome, SKU, categorias e preço",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Criar um novo produto",
+                "parameters": [
+                    {
+                        "description": "Dados do produto",
+                        "name": "product",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/product_handlers.CreateProductInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/product_entity.Product"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/product_handlers.ErrorResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/product_handlers.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/products/{name}": {
+            "get": {
+                "description": "Retorna um produto específico pelo nome",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "products"
+                ],
+                "summary": "Buscar produto por nome",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nome do produto",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/product_entity.Product"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/product_handlers.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "product_entity.Product": {
+            "type": "object",
+            "properties": {
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "sku": {
+                    "type": "integer"
+                }
+            }
+        },
+        "product_handlers.CreateProductInput": {
+            "type": "object",
+            "required": [
+                "categories",
+                "name",
+                "price",
+                "sku"
+            ],
+            "properties": {
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "Eletrônicos",
+                        "Computadores"
+                    ]
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Notebook"
+                },
+                "price": {
+                    "type": "integer",
+                    "example": 3500
+                },
+                "sku": {
+                    "type": "integer",
+                    "example": 12345
+                }
+            }
+        },
+        "product_handlers.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string",
+                    "example": "error message"
+                }
+            }
+        }
+    }
+}

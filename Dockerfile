@@ -55,19 +55,11 @@ USER appuser
 # Expor porta da aplicação
 EXPOSE 8080
 
-# Variáveis de ambiente padrão (podem ser sobrescritas no docker-compose)
-ENV DB_HOST=localhost \
-    DB_PORT=5432 \
-    DB_USER=alderaan \
-    DB_PASSWORD=alderaan123 \
-    DB_NAME=alderaan_db \
-    DB_SSLMODE=disable \
-    SERVER_PORT=8080 \
-    GIN_MODE=release
-
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1
 
 # Executar aplicação
 CMD ["/app/server"]
+
+LABEL org.opencontainers.image.source https://github.com/Tech-Preta/alderaan
