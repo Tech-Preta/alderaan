@@ -1,0 +1,75 @@
+---
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
+        with:
+          egress-policy: audit
+
+      - name: Checkout code
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4.0.4
+        with:
+          node-version: '20'
+
+      - name: Install semantic-release and plugins
+        run: |
+          npm install -g \
+            semantic-release@24.2.0 \
+            @semantic-release/git@10.0.1 \
+            @semantic-release/changelog@6.0.3 \
+            @semantic-release/exec@6.0.3 \
+            conventional-changelog-conventionalcommits@8.0.0
+
+      - name: Setup Go
+        uses: actions/setup-go@e0a4ef0ee3b01f6ce8c3f64fce3dc4f16e5a10cc # v5.2.0
+        with:
+          go-version: '1.24'
+
+      - name: Cache Go modules
+        uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.2.0
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Run tests
+        run: |
+          go test -v ./...
+
+      - name: Build application
+        run: |
+          go build -v -o bin/alderaan ./cmd/api
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GIT_AUTHOR_NAME: github-actions[bot]
+          GIT_AUTHOR_EMAIL: github-actions[bot]@users.noreply.github.com
+          GIT_COMMITTER_NAME: github-actions[bot]
+          GIT_COMMITTER_EMAIL: github-actions[bot]@users.noreply.github.com
+        run: npx semantic-release
