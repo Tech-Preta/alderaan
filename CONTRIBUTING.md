@@ -47,7 +47,7 @@ O projeto utiliza GitHub Actions para CI/CD automático. Quando você abrir um P
 1. **docker-build.yml**: Build e push de imagens Docker
    - Triggers: push em `main`/`develop`, tags `v*`, PRs
    - Multi-arch: linux/amd64, linux/arm64
-   - Publica em: ghcr.io/tech-preta/alderaan-api
+   - Publica em: ghcr.io/tech-preta/alderaan
 
 2. **helm-publish.yml**: Empacotamento e publicação do Helm chart
    - Triggers: push em `main`, tags `v*`, manual
