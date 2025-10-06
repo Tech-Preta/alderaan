@@ -1,4 +1,4 @@
-.PHONY: help swagger build run clean test
+.PHONY: help swagger build run clean test release-check release-version release-dry-run
 
 # Cores para output
 GREEN  := $(shell tput -Txterm setaf 2)
@@ -195,3 +195,22 @@ platform-restart: ## Reinicia toda a plataforma
 	@echo "${YELLOW}Reiniciando plataforma...${RESET}"
 	@docker-compose restart
 	@echo "${GREEN}✅ Plataforma reiniciada${RESET}"
+
+## Release commands
+release-check: ## Verifica se está pronto para release
+	@echo "${GREEN}Verificando requisitos para release...${RESET}"
+	@git diff --quiet || (echo "${YELLOW}⚠️  Existem mudanças não commitadas${RESET}" && exit 1)
+	@git diff --cached --quiet || (echo "${YELLOW}⚠️  Existem mudanças staged não commitadas${RESET}" && exit 1)
+	@echo "${GREEN}✅ Repositório limpo, pronto para release${RESET}"
+
+release-version: ## Mostra a versão atual
+	@echo "${GREEN}Versão atual:${RESET}"
+	@cat VERSION 2>/dev/null || echo "Nenhuma versão definida ainda"
+	@echo ""
+	@echo "${GREEN}Última tag:${RESET}"
+	@git describe --tags --abbrev=0 2>/dev/null || echo "Nenhuma tag criada ainda"
+
+release-dry-run: ## Simula um release (dry-run)
+	@echo "${GREEN}Simulando release...${RESET}"
+	@echo "${YELLOW}Nota: Para executar release real, use: git push origin main${RESET}"
+	@echo "${YELLOW}O release será automaticamente criado via GitHub Actions${RESET}"
