@@ -57,13 +57,22 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
+      - name: Install swag
+        run: |
+          go install github.com/swaggo/swag/cmd/swag@latest
+
+      - name: Generate Swagger docs
+        run: |
+          ~/go/bin/swag init -g cmd/main.go -o docs
+
       - name: Run tests
         run: |
           go test -v ./...
 
       - name: Build application
         run: |
-          go build -v -o bin/alderaan ./cmd/api
+          mkdir -p bin
+          go build -v -o bin/alderaan ./cmd/main.go
 
       - name: Release
         env:
