@@ -16,6 +16,15 @@ linters:
     - ineffassign
 
 linters-settings:
+  misspell:
+    locale: US
+    ignore-words:
+      - componentes
+      - duplicatas
+      - convers
+      - momento
+      - Calcular
+  
   revive:
     rules:
       - name: var-naming
