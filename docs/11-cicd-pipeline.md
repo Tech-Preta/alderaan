@@ -21,6 +21,7 @@ O projeto utiliza GitHub Actions para automatizar:
 - Pull requests para `main`
 
 **Funcionalidades:**
+- Geração automática da documentação Swagger antes do build
 - Build multi-arquitetura (linux/amd64, linux/arm64)
 - Cache otimizado do Docker Buildx
 - Publicação automática no ghcr.io

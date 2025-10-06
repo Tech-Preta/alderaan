@@ -18,10 +18,6 @@ RUN go mod download
 # Copiar código fonte
 COPY . .
 
-# Gerar documentação Swagger
-RUN go install github.com/swaggo/swag/cmd/swag@latest
-RUN swag init -g cmd/main.go -o docs
-
 # Build do binário com otimizações
 # CGO_ENABLED=0 para criar binário estático
 # -ldflags para reduzir tamanho (remover debug info)
@@ -45,9 +41,6 @@ WORKDIR /app
 
 # Copiar binário do stage de build
 COPY --from=builder /app/server /app/server
-
-# Copiar documentação Swagger gerada
-COPY --from=builder /app/docs /app/docs
 
 # Copiar certificados e timezone data
 COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
