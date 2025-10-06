@@ -59,6 +59,7 @@ jobs:
           type=raw,value=${{ steps.vars.outputs.short_sha }}
     
     - name: Build and push Docker image
+      id: docker_build
       uses: docker/build-push-action@v5
       with:
         context: .
@@ -69,16 +70,22 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
     
+    - name: Image digest
+      if: github.event_name != 'pull_request'
+      run: echo "Image pushed with digest ${{ steps.docker_build.outputs.digest }}"
+    
     - name: Update Helm Chart image tag
       if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
       run: |
+        echo "Updating Helm Chart with image tag: ${{ steps.vars.outputs.short_sha }}"
         sed -i "s|tag: \".*\"|tag: \"${{ steps.vars.outputs.short_sha }}\"|g" charts/alderaan/values.yaml
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
         git add charts/alderaan/values.yaml
         if git diff --staged --quiet; then
-          echo "No changes to commit"
+          echo "No changes to commit - image tag already up to date"
         else
           git commit -m "chore: update image tag to ${{ steps.vars.outputs.short_sha }} [skip ci]"
           git push
+          echo "✅ Helm Chart updated successfully with image tag: ${{ steps.vars.outputs.short_sha }}"
         fi
