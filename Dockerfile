@@ -62,4 +62,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
 # Executar aplicação
 CMD ["/app/server"]
 
-LABEL org.opencontainers.image.source https://github.com/Tech-Preta/alderaan
+LABEL org.opencontainers.image.source=https://github.com/Tech-Preta/alderaan
