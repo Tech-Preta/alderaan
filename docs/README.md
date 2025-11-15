@@ -104,6 +104,66 @@ Aprenda a instrumentar e monitorar sua aplicação com Prometheus baseado em Gol
 
 ---
 
+### 8. [Docker & Deployment](08-docker-deployment.md)
+Aprenda a containerizar e fazer deploy da aplicação usando Docker e Docker Compose.
+
+**Tópicos abordados:**
+- Dockerfile multi-stage
+- Docker Compose
+- Build e otimizações
+- Deploy em produção
+- CI/CD Pipeline
+- Segurança
+
+---
+
+### 9. [Flyway Migrations](09-flyway-migrations.md)
+Gerencie o schema do banco de dados com migrações versionadas usando Flyway.
+
+**Tópicos abordados:**
+- Versionamento de schema
+- Migrações e rollbacks
+- Seed data
+- Comandos e boas práticas
+
+---
+
+### 10. [Prometheus Queries](10-prometheus-queries.md)
+Consultas PromQL avançadas para análise de métricas.
+
+**Tópicos abordados:**
+- Queries PromQL
+- Análise de latência
+- Detecção de erros
+- Performance tuning
+
+---
+
+### 11. [Refactoring Metrics](11-refactoring-metrics.md)
+Refatoração e otimização de coleta de métricas.
+
+**Tópicos abordados:**
+- Organização de métricas
+- Performance
+- Boas práticas
+
+---
+
+### 12. [🚀 Releases, Tags e CHANGELOG Automáticos](12-automated-releases.md)
+Aprenda como funciona o sistema de releases automáticos do projeto.
+
+**Tópicos abordados:**
+- Conventional Commits
+- Semantic Versioning
+- Release automático via GitHub Actions
+- Geração automática de CHANGELOG
+- Tags Git automáticas
+- Comandos Make para releases
+- Exemplos práticos
+- Troubleshooting
+
+---
+
 ## 🎯 Fluxo de Leitura Recomendado
 
 Se você é novo no projeto, recomendamos ler nesta ordem:
