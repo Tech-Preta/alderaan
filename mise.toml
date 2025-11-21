@@ -32,6 +32,10 @@ run = "golangci-lint run --config=.golangci.yml"
 description = "Format the code"
 run = ["golangci-lint run --fix", "swag fmt"]
 
+[tasks.docs]
+description = "Generate Swagger documentation"
+run = "swag init -g cmd/main.go --ot \"go, yaml\" -p snakecase --parseInternal=true --generatedTime=true --requiredByDefault=true --parseDependencyLevel=1"
+
 [tasks.generators]
 description = "Run code generators"
 run = [

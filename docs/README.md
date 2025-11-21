@@ -104,6 +104,58 @@ Aprenda a instrumentar e monitorar sua aplicação com Prometheus baseado em Gol
 
 ---
 
+### 8. [Docker & Deployment](08-docker-deployment.md)
+Aprenda sobre containerização com Docker, multi-stage builds e estratégias de deployment.
+
+**Tópicos abordados:**
+- Multi-stage builds
+- Otimização de imagens
+- Docker Compose
+- Segurança (usuário não-root, scan de vulnerabilidades)
+- Health checks
+- Variáveis de ambiente
+- Boas práticas
+
+---
+
+### 9. [Flyway Migrations](09-flyway-migrations.md)
+Gerencie o schema do banco de dados com versionamento profissional usando Flyway.
+
+**Tópicos abordados:**
+- Gerenciamento de migrations
+- Versionamento de schema
+- Rollback e validação
+- Boas práticas
+
+---
+
+### 10. [Prometheus Queries (PromQL)](10-prometheus-queries.md)
+Guia completo de queries PromQL para consultar métricas da aplicação.
+
+**Tópicos abordados:**
+- Sintaxe PromQL
+- Queries comuns
+- Agregações
+- Rate e histogramas
+- Alerting rules
+
+---
+
+### 11. [CI/CD Pipeline](11-cicd-pipeline.md)
+Aprenda sobre o pipeline CI/CD implementado com GitHub Actions para publicação automática de Docker images e Helm charts.
+
+**Tópicos abordados:**
+- Workflows do GitHub Actions
+- Build e publicação de Docker images multi-arquitetura
+- Empacotamento e publicação de Helm charts
+- Criação automática de releases
+- Versionamento semântico
+- GitHub Container Registry (ghcr.io)
+- Configuração de secrets
+- Troubleshooting
+
+---
+
 ## 🎯 Fluxo de Leitura Recomendado
 
 Se você é novo no projeto, recomendamos ler nesta ordem:

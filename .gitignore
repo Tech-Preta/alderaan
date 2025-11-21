@@ -40,11 +40,6 @@ monitoring/alertmanager_data/
 # Dados do banco (volumes Docker)
 postgres_data/
 
-# Documentação Swagger gerada
-docs/docs.go
-docs/swagger.json
-docs/swagger.yaml
-
 # Temporary files
 tmp/
 temp/

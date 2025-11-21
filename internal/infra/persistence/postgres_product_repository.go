@@ -23,7 +23,9 @@ func (r *PostgresProductRepository) Add(product product_entity.Product) error {
 	if err != nil {
 		return fmt.Errorf("erro ao iniciar transação: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() {
+		_ = tx.Rollback()
+	}()
 
 	// Inserir produto
 	var productID int
@@ -160,12 +162,16 @@ func (r *PostgresProductRepository) GetMetrics() product_repository.RepositoryMe
 	}
 
 	// Total de produtos
-	r.db.QueryRow("SELECT COUNT(*) FROM products").Scan(&metrics.TotalProducts)
+	_ = r.db.QueryRow("SELECT COUNT(*) FROM products").Scan(&metrics.TotalProducts)
 
 	// Valor total e preço médio
 	var totalValue sql.NullFloat64
-	r.db.QueryRow("SELECT SUM(price), AVG(price) FROM products").
-		Scan(&totalValue, &metrics.AveragePrice)
+	_ = r.db.QueryRow(`
+		SELECT 
+			SUM(price * stock), 
+			AVG(price) 
+		FROM products
+	`).Scan(&totalValue, &metrics.AveragePrice)
 
 	if totalValue.Valid {
 		metrics.TotalValue = totalValue.Float64

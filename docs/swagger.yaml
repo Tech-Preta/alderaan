@@ -1,0 +1,125 @@
+basePath: /api/v1
+definitions:
+  product_entity.Product:
+    properties:
+      categories:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      price:
+        type: integer
+      sku:
+        type: integer
+    type: object
+  product_handlers.CreateProductInput:
+    properties:
+      categories:
+        example:
+        - Eletrônicos
+        - Computadores
+        items:
+          type: string
+        type: array
+      name:
+        example: Notebook
+        type: string
+      price:
+        example: 3500
+        type: integer
+      sku:
+        example: 12345
+        type: integer
+    required:
+    - categories
+    - name
+    - price
+    - sku
+    type: object
+  product_handlers.ErrorResponse:
+    properties:
+      error:
+        example: error message
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    name: API Support
+    url: https://github.com/williamkoller
+  description: API RESTful com DDD, Gin e Graceful Shutdown
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  title: Servidor HTTP com Domain Driven Design
+  version: "1.0"
+paths:
+  /products:
+    get:
+      description: Retorna uma lista com todos os produtos cadastrados
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/product_entity.Product'
+            type: array
+      summary: Listar todos os produtos
+      tags:
+      - products
+    post:
+      consumes:
+      - application/json
+      description: Cria um novo produto com nome, SKU, categorias e preço
+      parameters:
+      - description: Dados do produto
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/product_handlers.CreateProductInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/product_entity.Product'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/product_handlers.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/product_handlers.ErrorResponse'
+      summary: Criar um novo produto
+      tags:
+      - products
+  /products/{name}:
+    get:
+      description: Retorna um produto específico pelo nome
+      parameters:
+      - description: Nome do produto
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/product_entity.Product'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/product_handlers.ErrorResponse'
+      summary: Buscar produto por nome
+      tags:
+      - products
+swagger: "2.0"
