@@ -22,10 +22,22 @@ Se você encontrar um bug ou tiver uma sugestão de melhoria, por favor, abra um
     ```
 4. **Faça as suas mudanças**: Adicione ou modifique o código conforme necessário.
 5. **Adicione testes**: Certifique-se de que suas mudanças estão cobertas por testes.
-6. **Commit suas mudanças**:
+6. **Commit suas mudanças** usando [Conventional Commits](https://www.conventionalcommits.org/pt-br/):
     ```sh
-    git commit -m "Descrição das minhas mudanças"
+    # Para novas funcionalidades
+    git commit -m "feat: adiciona suporte a autenticação OAuth"
+    
+    # Para correções de bugs
+    git commit -m "fix: corrige vazamento de memória no handler"
+    
+    # Para documentação
+    git commit -m "docs: atualiza README com exemplos"
+    
+    # Para testes
+    git commit -m "test: adiciona testes para validação de produtos"
     ```
+    
+    📖 [**Veja o guia completo de commits →**](docs/12-automated-releases.md#-tipos-de-commits)
 7. **Envie a sua branch**:
     ```sh
     git push origin minha-feature
