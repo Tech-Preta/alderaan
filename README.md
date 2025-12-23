@@ -1,5 +1,9 @@
 # Servidor HTTP com Domain Driven Design, Gin e Shutdown Controlado
 
+[![Docker Build](https://github.com/Tech-Preta/alderaan/actions/workflows/docker-build.yml/badge.svg)](https://github.com/Tech-Preta/alderaan/actions/workflows/docker-build.yml)
+[![Helm Publish](https://github.com/Tech-Preta/alderaan/actions/workflows/helm-publish.yml/badge.svg)](https://github.com/Tech-Preta/alderaan/actions/workflows/helm-publish.yml)
+[![Release](https://github.com/Tech-Preta/alderaan/actions/workflows/release.yml/badge.svg)](https://github.com/Tech-Preta/alderaan/actions/workflows/release.yml)
+
 Este projeto demonstra como criar um servidor HTTP completo com Domain-Driven Design (DDD), usando Gin e implementando um graceful shutdown.
 
 ## 📋 Estrutura do Projeto
@@ -41,7 +45,48 @@ Este projeto demonstra como criar um servidor HTTP completo com Domain-Driven De
 - **Arquitetura limpa**: Separação clara entre camadas de domínio, aplicação e infraestrutura
 - **Flyway Migrations**: Versionamento automático e rastreável do schema do banco
 
-## 🚀 Como Executar
+## 📦 Instalação via Docker/Helm
+
+### Docker (Método Recomendado)
+
+Baixe e execute a imagem Docker publicada:
+
+```bash
+# Baixar a última versão
+docker pull ghcr.io/tech-preta/alderaan-api:latest
+
+# Executar com variáveis de ambiente
+docker run -d \
+  -p 8080:8080 \
+  -e DB_HOST=your-db-host \
+  -e DB_USER=your-db-user \
+  -e DB_PASSWORD=your-db-password \
+  -e DB_NAME=your-db-name \
+  --name alderaan-api \
+  ghcr.io/tech-preta/alderaan-api:latest
+```
+
+### Kubernetes com Helm
+
+Instale usando Helm chart publicado:
+
+```bash
+# Adicionar repositório Helm (OCI Registry)
+helm install alderaan oci://ghcr.io/tech-preta/helm-charts/alderaan \
+  --version 1.0.0 \
+  --namespace alderaan \
+  --create-namespace
+
+# Customizar instalação
+helm install alderaan oci://ghcr.io/tech-preta/helm-charts/alderaan \
+  --set replicaCount=3 \
+  --set image.tag=v1.0.0 \
+  --set postgresql.primary.persistence.size=20Gi
+```
+
+Para mais opções de configuração, consulte a [documentação do Helm Chart](charts/README.md).
+
+## 🚀 Como Executar (Desenvolvimento Local)
 
 ### Pré-requisitos
 
@@ -262,6 +307,7 @@ Para entender os conceitos e padrões utilizados neste projeto, consulte a docum
 - **[Docker & Deployment](docs/08-docker-deployment.md)** - Multi-stage build e containerização
 - **[Flyway Migrations](docs/09-flyway-migrations.md)** - Gerenciamento profissional de migrations
 - **[Prometheus Queries (PromQL)](docs/10-prometheus-queries.md)** - Guia completo de queries para métricas
+- **[CI/CD Pipeline](docs/11-cicd-pipeline.md)** - Pipeline de publicação automática com GitHub Actions
 - **[Database PostgreSQL](db/README.md)** - Schema SQL, migrations e persistência
 
 📖 [**Ver toda a documentação →**](docs/README.md)

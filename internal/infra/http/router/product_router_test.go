@@ -8,12 +8,12 @@ import (
 	"errors"
 
 	"github.com/gin-gonic/gin"
-	product_repository "github.com/williamkoller/golang-domain-driven-design/internal/domain/product/repository"
+	"github.com/prometheus/client_golang/prometheus"
 	product_entity "github.com/williamkoller/golang-domain-driven-design/internal/domain/product/entity"
+	product_repository "github.com/williamkoller/golang-domain-driven-design/internal/domain/product/repository"
 	product_handlers "github.com/williamkoller/golang-domain-driven-design/internal/infra/http/handlers"
 	"github.com/williamkoller/golang-domain-driven-design/internal/metrics"
 	shared_events "github.com/williamkoller/golang-domain-driven-design/internal/shared/domain/events"
-	"github.com/prometheus/client_golang/prometheus"
 )
 
 // MockProductRepository para testes do router
@@ -138,11 +138,11 @@ func TestSetupProductRouter(t *testing.T) {
 	routes := router.Routes()
 
 	expectedRoutes := map[string]bool{
-		"GET-/metrics":              false,
-		"GET-/swagger/*any":         false,
-		"GET-/health":               false,
-		"POST-/api/v1/products":     false,
-		"GET-/api/v1/products":      false,
+		"GET-/metrics":               false,
+		"GET-/swagger/*any":          false,
+		"GET-/health":                false,
+		"POST-/api/v1/products":      false,
+		"GET-/api/v1/products":       false,
 		"GET-/api/v1/products/:name": false,
 	}
 
