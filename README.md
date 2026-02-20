@@ -262,9 +262,43 @@ Para entender os conceitos e padrões utilizados neste projeto, consulte a docum
 - **[Docker & Deployment](docs/08-docker-deployment.md)** - Multi-stage build e containerização
 - **[Flyway Migrations](docs/09-flyway-migrations.md)** - Gerenciamento profissional de migrations
 - **[Prometheus Queries (PromQL)](docs/10-prometheus-queries.md)** - Guia completo de queries para métricas
+- **[Releases Automáticos](docs/12-automated-releases.md)** - Sistema de releases, tags e CHANGELOG automáticos
 - **[Database PostgreSQL](db/README.md)** - Schema SQL, migrations e persistência
 
 📖 [**Ver toda a documentação →**](docs/README.md)
+
+## 🚀 Releases e Versionamento
+
+Este projeto utiliza **Semantic Versioning** e **Conventional Commits** para releases automáticos:
+
+- ✅ **Versioning automático** baseado em commits
+- ✅ **CHANGELOG.md** gerado automaticamente
+- ✅ **Tags Git** criadas automaticamente
+- ✅ **GitHub Releases** publicados automaticamente
+
+### Como funciona
+
+Ao fazer push para `main` com commits no formato [Conventional Commits](https://www.conventionalcommits.org/pt-br/):
+
+```bash
+# Nova funcionalidade (minor version)
+git commit -m "feat: adiciona autenticação JWT"
+
+# Correção de bug (patch version)
+git commit -m "fix: corrige timeout em requisições"
+
+# Breaking change (major version)
+git commit -m "feat!: redesenha API v2"
+```
+
+O sistema automaticamente:
+1. Analisa os commits
+2. Determina a nova versão
+3. Atualiza o CHANGELOG.md
+4. Cria tag Git
+5. Publica release no GitHub
+
+📖 [**Guia completo de releases →**](docs/12-automated-releases.md)
 
 ## 🤝 Contribuindo
 
