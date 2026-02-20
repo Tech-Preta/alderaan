@@ -1,0 +1,74 @@
+---
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Generate Changelog
+      id: changelog
+      run: |
+        # Get previous tag
+        PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+        
+        if [ -z "$PREVIOUS_TAG" ]; then
+          # If no previous tag, get all commits
+          CHANGELOG=$(git log --pretty=format:"- %s (%h)" --no-merges)
+        else
+          # Get commits since previous tag
+          CHANGELOG=$(git log --pretty=format:"- %s (%h)" --no-merges ${PREVIOUS_TAG}..HEAD)
+        fi
+        
+        # Save to file to handle multiline output properly
+        echo "$CHANGELOG" > /tmp/changelog.txt
+        
+        # Set output using environment file
+        {
+          echo 'CHANGELOG<<EOF'
+          cat /tmp/changelog.txt
+          echo 'EOF'
+        } >> $GITHUB_OUTPUT
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.USER_TOKEN }}
+      with:
+        tag_name: ${{ github.ref_name }}
+        name: Release ${{ github.ref_name }}
+        body: |
+          ## 🚀 What's New
+          
+          ${{ steps.changelog.outputs.CHANGELOG }}
+          
+          ## 📦 Installation
+          
+          ### Docker
+          ```bash
+          docker pull ghcr.io/${{ github.repository_owner }}/alderaan:${{ github.ref_name }}
+          ```
+          
+          ### Helm
+          ```bash
+          helm install alderaan oci://ghcr.io/${{ github.repository_owner }}/helm-charts/alderaan --version ${{ github.ref_name }}
+          ```
+          
+          ## 📚 Documentation
+          
+          For more information, please visit the [GitHub repository](https://github.com/${{ github.repository }})
+        draft: false
+        prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'rc') }}

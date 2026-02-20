@@ -364,7 +364,7 @@ func TestPostgresProductRepository_GetMetrics(t *testing.T) {
 
 				// Total value and Average price
 				sumAvgRows := sqlmock.NewRows([]string{"sum", "avg"}).AddRow(5000, 500.0)
-				mock.ExpectQuery("SELECT SUM\\(price\\), AVG\\(price\\) FROM products").
+				mock.ExpectQuery("SELECT\\s+SUM\\(price \\* stock\\),\\s+AVG\\(price\\)\\s+FROM products").
 					WillReturnRows(sumAvgRows)
 
 				// Products by category
@@ -402,7 +402,7 @@ func TestPostgresProductRepository_GetMetrics(t *testing.T) {
 					WillReturnRows(countRows)
 
 				sumAvgRows := sqlmock.NewRows([]string{"sum", "avg"}).AddRow(nil, 0.0)
-				mock.ExpectQuery("SELECT SUM\\(price\\), AVG\\(price\\) FROM products").
+				mock.ExpectQuery("SELECT\\s+SUM\\(price \\* stock\\),\\s+AVG\\(price\\)\\s+FROM products").
 					WillReturnRows(sumAvgRows)
 
 				catRows := sqlmock.NewRows([]string{"name", "count"})

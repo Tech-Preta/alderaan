@@ -73,8 +73,9 @@ func main() {
 	r := product_router.SetupProductRouter(productHandler, m)
 
 	server := &http.Server{
-		Addr:    ":" + cfg.Server.Port,
-		Handler: r,
+		Addr:              ":" + cfg.Server.Port,
+		Handler:           r,
+		ReadHeaderTimeout: 30 * time.Second,
 	}
 
 	go func() {

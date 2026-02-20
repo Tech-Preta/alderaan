@@ -323,7 +323,6 @@ func TestProductRepository_ConcurrentFindAndAdd(t *testing.T) {
 
 // Benchmarks
 func BenchmarkProductRepository_Add(b *testing.B) {
-	repo := NewRepository()
 	product := product_entity.Product{
 		Name:       "Benchmark Product",
 		Sku:        12345,
@@ -333,7 +332,7 @@ func BenchmarkProductRepository_Add(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		repo = NewRepository() // Reset para evitar duplicatas
+		repo := NewRepository() // Reset para evitar duplicatas
 		_ = repo.Add(product)
 	}
 }

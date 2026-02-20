@@ -10,8 +10,7 @@ O projeto usa **multi-stage build** para otimizar o tamanho da imagem final.
 
 Responsável por:
 - ✅ Download de dependências Go
-- ✅ Geração da documentação Swagger
-- ✅ Compilação do binário estático
+- ✅ Compilação do binário estático (com Swagger docs embarcados)
 
 ### **Stage 2: Runtime (alpine:3.19)**
 
@@ -25,8 +24,15 @@ Responsável por:
 
 ### **Build Manual**
 
+**Importante**: Gere a documentação Swagger antes de construir a imagem:
+
 ```bash
-# Build da imagem
+# 1. Gerar documentação Swagger (necessário!)
+make swagger
+# ou
+swag init -g cmd/main.go -o docs
+
+# 2. Build da imagem
 docker build -t alderaan-api:latest .
 
 # Build com tag de versão
@@ -38,6 +44,8 @@ docker build --no-cache -t alderaan-api:latest .
 # Ou use Makefile
 make docker-build
 ```
+
+> **Nota**: A documentação Swagger é embarcada no binário durante a compilação. O Dockerfile não gera a documentação, apenas compila o código que já inclui os docs.
 
 ### **Build via Docker Compose**
 

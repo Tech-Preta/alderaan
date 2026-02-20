@@ -1,0 +1,92 @@
+---
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches: [main, develop]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.USER_TOKEN }}
+    
+    - name: Generate short SHA
+      id: vars
+      run: echo "short_sha=$(git rev-parse --short=7 HEAD)" >> $GITHUB_OUTPUT
+    
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.24'
+    
+    - name: Generate Swagger documentation
+      run: |
+        go install github.com/swaggo/swag/cmd/swag@latest
+        swag init -g cmd/main.go -o docs
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.USER_TOKEN }}
+    
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ghcr.io/${{ github.repository_owner }}/alderaan
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=raw,value=latest,enable={{is_default_branch}}
+          type=raw,value=${{ steps.vars.outputs.short_sha }}
+    
+    - name: Build and push Docker image
+      id: docker_build
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        platforms: linux/amd64,linux/arm64
+        push: ${{ github.event_name != 'pull_request' }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+    
+    - name: Image digest
+      if: github.event_name != 'pull_request'
+      run: echo "Image pushed with digest ${{ steps.docker_build.outputs.digest }}"
+    
+    - name: Update Helm Chart image tag
+      if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+      run: |
+        echo "Updating Helm Chart with image tag: ${{ steps.vars.outputs.short_sha }}"
+        sed -i "s|tag: \".*\"|tag: \"${{ steps.vars.outputs.short_sha }}\"|g" charts/alderaan/values.yaml
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git add charts/alderaan/values.yaml
+        if git diff --staged --quiet; then
+          echo "No changes to commit - image tag already up to date"
+        else
+          git commit -m "chore: update image tag to ${{ steps.vars.outputs.short_sha }} [skip ci]"
+          git push
+          echo "✅ Helm Chart updated successfully with image tag: ${{ steps.vars.outputs.short_sha }}"
+        fi
