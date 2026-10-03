@@ -1,0 +1,178 @@
+---
+name: Helm Chart
+
+# Empacotamento, validação e publicação do Helm Chart do Alderaan no GitHub Packages (OCI Registry).
+#
+# - pull_request com alterações em charts/**: executa lint e testes de renderização de template
+# - push em main: valida, empacota e publica no GHCR (com a versão definida no Chart.yaml)
+# - workflow_call (release.yml): recebe a versão semântica da release, atualiza o Chart.yaml e publica
+# - workflow_dispatch: permite acionamento manual (opcionalmente passando uma versão específica)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'charts/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'charts/**'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Versão semântica para o Chart (ex: 1.1.0). Deixe vazio para usar a do Chart.yaml'
+        required: false
+        type: string
+  workflow_call:
+    inputs:
+      version:
+        description: 'Versão semântica publicada (ex: 1.1.0)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: helm-${{ github.workflow }}-${{ inputs.version || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  HELM_VERSION: 'v3.17.1'
+  CHART_DIR: 'charts/alderaan'
+  REGISTRY: 'ghcr.io'
+
+jobs:
+  lint-and-validate:
+    name: Lint and Validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Helm
+        uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
+        with:
+          version: ${{ env.HELM_VERSION }}
+
+      - name: Add dependency repositories
+        run: |
+          helm repo add bitnami https://charts.bitnami.com/bitnami
+          helm repo update
+
+      - name: Build chart dependencies
+        run: helm dependency build ${{ env.CHART_DIR }}
+
+      - name: Run Helm lint
+        run: helm lint ${{ env.CHART_DIR }} --strict
+
+      - name: Validate template rendering
+        run: |
+          helm template test-release ${{ env.CHART_DIR }} > /dev/null
+          echo "Template renderizado com sucesso."
+
+      - name: Validate examples values
+        run: |
+          for values_file in ${{ env.CHART_DIR }}/examples/*.yaml; do
+            if [ -f "$values_file" ]; then
+              echo "Validando com $values_file..."
+              helm template test-release ${{ env.CHART_DIR }} -f "$values_file" > /dev/null
+            fi
+          done
+
+  publish:
+    name: Package and Publish to GHCR (OCI)
+    needs: lint-and-validate
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.version && format('v{0}', inputs.version) || '' }}
+          persist-credentials: false
+
+      - name: Set up Helm
+        uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310 # v5.0.1
+        with:
+          version: ${{ env.HELM_VERSION }}
+
+      - name: Add dependency repositories
+        run: |
+          helm repo add bitnami https://charts.bitnami.com/bitnami
+          helm repo update
+
+      - name: Build chart dependencies
+        run: helm dependency build ${{ env.CHART_DIR }}
+
+      - name: Update Chart version (se fornecido)
+        id: chart-version
+        run: |
+          VERSION="${{ inputs.version }}"
+          if [ -n "$VERSION" ]; then
+            # Remove prefixo 'v' se presente
+            CLEAN_VERSION="${VERSION#v}"
+            echo "Atualizando Chart.yaml com a versão: $CLEAN_VERSION"
+            sed -i "s/^version:.*/version: $CLEAN_VERSION/" ${{ env.CHART_DIR }}/Chart.yaml
+            sed -i "s/^appVersion:.*/appVersion: \"$CLEAN_VERSION\"/" ${{ env.CHART_DIR }}/Chart.yaml
+          fi
+          CHART_VER=$(grep '^version:' ${{ env.CHART_DIR }}/Chart.yaml | awk '{print $2}')
+          APP_VER=$(grep '^appVersion:' ${{ env.CHART_DIR }}/Chart.yaml | awk '{print $2}' | tr -d '"')
+          echo "chart_version=$CHART_VER" >> "$GITHUB_OUTPUT"
+          echo "app_version=$APP_VER" >> "$GITHUB_OUTPUT"
+
+      - name: Package Helm Chart
+        run: |
+          mkdir -p .cr-packages
+          helm package ${{ env.CHART_DIR }} --destination .cr-packages
+
+      - name: Log in to GHCR (OCI Registry)
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ${{ env.REGISTRY }} \
+            --username "${{ github.actor }}" \
+            --password-stdin
+
+      - name: Push Helm Chart to GHCR OCI Registry
+        id: push-chart
+        run: |
+          REPO_OWNER_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          TARGET_OCI="oci://${{ env.REGISTRY }}/${REPO_OWNER_LOWER}/helm-charts"
+          echo "Publicando em $TARGET_OCI..."
+          
+          # Realiza o push do arquivo .tgz gerado
+          for pkg in .cr-packages/*.tgz; do
+            helm push "$pkg" "$TARGET_OCI"
+          done
+          echo "target_oci=$TARGET_OCI" >> "$GITHUB_OUTPUT"
+
+      - name: Summary
+        run: |
+          {
+            echo "### 📊 Helm Chart Publicado no OCI Registry"
+            echo ""
+            echo "- **Chart**: \`alderaan\`"
+            echo "- **Version**: \`${{ steps.chart-version.outputs.chart_version }}\`"
+            echo "- **App Version**: \`${{ steps.chart-version.outputs.app_version }}\`"
+            echo "- **Registry**: \`${{ steps.push-chart.outputs.target_oci }}\`"
+            echo ""
+            echo "#### Como instalar:"
+            echo '```bash'
+            echo "# Instalação direta via OCI:"
+            echo "helm install alderaan ${{ steps.push-chart.outputs.target_oci }}/alderaan --version ${{ steps.chart-version.outputs.chart_version }}"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

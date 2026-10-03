@@ -84,6 +84,11 @@ spec:
                 configMapKeyRef:
                   name: {{ include "alderaan.fullname" . }}-config
                   key: DB_SSL_MODE
+            - name: DB_SSLMODE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "alderaan.fullname" . }}-config
+                  key: DB_SSL_MODE
             - name: DB_MAX_OPEN_CONNS
               valueFrom:
                 configMapKeyRef:

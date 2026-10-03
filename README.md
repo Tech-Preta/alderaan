@@ -113,6 +113,46 @@ make platform-logs  # Ver logs de tudo
 make platform-status # Status dos serviços
 ```
 
+### 🐳 Execução via Docker (GitHub Container Registry)
+
+A imagem multi-arquitetura (`linux/amd64`, `linux/arm64`) está disponível no GitHub Container Registry:
+
+```bash
+# Baixar a versão mais recente
+docker pull ghcr.io/tech-preta/alderaan-api:latest
+
+# Ou uma versão específica
+docker pull ghcr.io/tech-preta/alderaan-api:1.0.0
+
+# Executar container apontando para seu PostgreSQL
+docker run -d \
+  --name alderaan-api \
+  -p 8080:8080 \
+  -e DB_HOST=host.docker.internal \
+  -e DB_PORT=5432 \
+  -e DB_USER=alderaan \
+  -e DB_PASSWORD=alderaan123 \
+  -e DB_NAME=alderaan_db \
+  ghcr.io/tech-preta/alderaan-api:latest
+```
+
+### 📊 Instalação via Helm Chart (OCI Registry)
+
+O Helm Chart oficial é publicado no GitHub Packages (OCI Registry):
+
+```bash
+# Instalação direta com PostgreSQL embutido
+helm install alderaan oci://ghcr.io/tech-preta/helm-charts/alderaan
+
+# Instalação de versão específica com namespace dedicado
+helm install alderaan oci://ghcr.io/tech-preta/helm-charts/alderaan \
+  --version 1.0.0 \
+  --namespace alderaan \
+  --create-namespace
+```
+
+📖 [**Guia completo do Helm Chart →**](charts/README.md)
+
 ## 📚 Documentação Interativa (Swagger)
 
 Acesse a documentação interativa da API em:

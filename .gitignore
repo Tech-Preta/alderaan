@@ -73,3 +73,9 @@ tmp/
 
 # Mise
 .mise.toml.local
+
+# Helm packaging and dependencies
+charts/*/charts/
+charts/*/packages/
+.cr-packages/
+*.tgz

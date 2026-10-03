@@ -8,15 +8,14 @@ Por favor, inclua um resumo das mudanças e a motivação por trás delas. Liste
 
 ## Tipo de Mudança
 
-- [ ] Bugfix
-- [ ] Nova funcionalidade
+- [ ] Bugfix (correção de bug)
+- [ ] Nova funcionalidade (feat)
 - [ ] Mudança de funcionalidade existente
 - [ ] Documentação
 - [ ] Segurança de código
-- [ ] Kubernetes
-- [ ] Helm
-- [ ] Docker
-- [ ] GitHub Actions
+- [ ] Kubernetes / Helm
+- [ ] Docker / Containerização
+- [ ] CI/CD / GitHub Actions
 - [ ] Outro
 
 ## Checklist
@@ -28,12 +27,14 @@ Por favor, inclua um resumo das mudanças e a motivação por trás delas. Liste
 - [ ] Minhas mudanças não geram novos avisos
 - [ ] Eu adicionei testes que provam que minha correção é eficaz ou que minha funcionalidade funciona
 - [ ] Testes de unidade novos e existentes passam localmente com minhas mudanças
+- [ ] Artefatos Docker e Helm foram validados localmente
 - [ ] Quaisquer mudanças dependentes foram mescladas e publicadas nos módulos downstream
 
-## Screenshots (se aplicável)
+## Screenshots / Evidências (se aplicável)
 
-Se aplicável, adicione capturas de tela para ajudar a explicar suas mudanças.
+Se aplicável, adicione capturas de tela ou logs para ajudar a explicar suas mudanças.
 
 ## Questões Relacionadas
 
 Liste quaisquer issues relacionadas aqui, usando o formato `#<issue_number>`.
+Closes #

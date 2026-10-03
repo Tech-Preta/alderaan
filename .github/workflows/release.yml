@@ -16,8 +16,11 @@ jobs:
   release:
     name: Create Release
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, 'skip ci')"
-    
+    outputs:
+      has_release: ${{ steps.release_info.outputs.has_release }}
+      version: ${{ steps.release_info.outputs.version }}
+      tag: ${{ steps.release_info.outputs.tag }}
+
     steps:
       - name: Harden the runner
         uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
@@ -45,7 +48,7 @@ jobs:
             conventional-changelog-conventionalcommits@8.0.0
 
       - name: Setup Go
-        uses: actions/setup-go@e0a4ef0ee3b01f6ce8c3f64fce3dc4f16e5a10cc # v5.2.0
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: '1.24'
 
@@ -59,7 +62,7 @@ jobs:
 
       - name: Install swag
         run: |
-          go install github.com/swaggo/swag/cmd/swag@latest
+          go install github.com/swaggo/swag/cmd/swag@v1.16.6
 
       - name: Generate Swagger docs
         run: |
@@ -75,10 +78,51 @@ jobs:
           go build -v -o bin/alderaan ./cmd/main.go
 
       - name: Release
+        id: semantic
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.USER_TOKEN || secrets.GITHUB_TOKEN }}
           GIT_AUTHOR_NAME: github-actions[bot]
           GIT_AUTHOR_EMAIL: github-actions[bot]@users.noreply.github.com
           GIT_COMMITTER_NAME: github-actions[bot]
           GIT_COMMITTER_EMAIL: github-actions[bot]@users.noreply.github.com
         run: npx semantic-release
+
+      - name: Detect released version
+        id: release_info
+        run: |
+          # Fetch tags atualizadas criadas pelo semantic-release
+          git fetch --tags --force
+          CURRENT_TAG=$(git tag --points-at HEAD | grep -E '^v[0-9]+' | head -n 1 || true)
+          if [ -n "$CURRENT_TAG" ]; then
+            CLEAN_VER="${CURRENT_TAG#v}"
+            echo "has_release=true" >> "$GITHUB_OUTPUT"
+            echo "version=${CLEAN_VER}" >> "$GITHUB_OUTPUT"
+            echo "tag=${CURRENT_TAG}" >> "$GITHUB_OUTPUT"
+            echo "✅ Nova versão liberada: $CURRENT_TAG ($CLEAN_VER)"
+          else
+            echo "has_release=false" >> "$GITHUB_OUTPUT"
+            echo "ℹ️ Nenhuma release gerada neste workflow."
+          fi
+
+  publish-docker:
+    name: Publish Docker Image
+    needs: release
+    if: needs.release.outputs.has_release == 'true'
+    permissions:
+      contents: read
+      packages: write
+      security-events: write
+    uses: ./.github/workflows/docker-build.yml
+    with:
+      version: ${{ needs.release.outputs.version }}
+
+  publish-helm:
+    name: Publish Helm Chart
+    needs: [release, publish-docker]
+    if: needs.release.outputs.has_release == 'true'
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/helm-publish.yml
+    with:
+      version: ${{ needs.release.outputs.version }}
