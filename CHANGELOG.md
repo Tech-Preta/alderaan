@@ -5,6 +5,18 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## 1.0.0 (2026-10-03)
+
+### ✨ Funcionalidades
+
+* add docker build workflow and helm chart packaging and publication support ([4f4cba6](https://github.com/Tech-Preta/alderaan/commit/4f4cba69e4a0485bdbaad03fd4729738b0d3aec1))
+* add initial project structure with docker, postgresql, and monitoring setup ([172a98d](https://github.com/Tech-Preta/alderaan/commit/172a98d3263a45e4ea1fe35d507382909ac071e6))
+* implementa sistema de releases, tags e CHANGELOG automáticos ([#4](https://github.com/Tech-Preta/alderaan/issues/4)) ([d0ebd01](https://github.com/Tech-Preta/alderaan/commit/d0ebd010f8284fa1bb56751634862d4b3b7c9f3b))
+
+### 🐛 Correções
+
+* use GITHUB_TOKEN and add GH_TOKEN for release workflow authentication ([bffd145](https://github.com/Tech-Preta/alderaan/commit/bffd145f3771733ccf1575abdf8e993fecd30fde))
+
 ## [1.0.0] - 2024-10-04
 
 ### 🎉 Lançamento Inicial
