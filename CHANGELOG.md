@@ -5,6 +5,12 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [1.0.2](https://github.com/Tech-Preta/alderaan/compare/v1.0.1...v1.0.2) (2026-10-03)
+
+### 🐛 Correções
+
+* **ci:** use GITHUB_TOKEN for SBOM submission and enable gomod in dependabot ([5571fdc](https://github.com/Tech-Preta/alderaan/commit/5571fdcbba3f3545aa1bc2dfbcb5e6f277df8ec7))
+
 ## [1.0.1](https://github.com/Tech-Preta/alderaan/compare/v1.0.0...v1.0.1) (2026-10-03)
 
 ### 📚 Documentação
