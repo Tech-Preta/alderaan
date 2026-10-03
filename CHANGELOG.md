@@ -5,6 +5,12 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [1.0.1](https://github.com/Tech-Preta/alderaan/compare/v1.0.0...v1.0.1) (2026-10-03)
+
+### 📚 Documentação
+
+* update README with comprehensive project documentation and instructions ([147c14e](https://github.com/Tech-Preta/alderaan/commit/147c14e9f16ab7b161ee427679c668d83cab3355))
+
 ## 1.0.0 (2026-10-03)
 
 ### ✨ Funcionalidades
