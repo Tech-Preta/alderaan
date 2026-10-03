@@ -42,7 +42,7 @@ concurrency:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: alderaan-api
-  GO_VERSION: '1.24'
+  GO_VERSION: '1.26'
 
 jobs:
   test:
